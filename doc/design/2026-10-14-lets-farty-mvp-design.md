@@ -75,7 +75,21 @@ doc/operations/          Release and incident runbooks
 .github/                 Workflows, PR template, ownership rules
 ```
 
-`AGENTS.md` stays short and points to the right document for a task. `CLAUDE.md` imports it to avoid duplicated instructions. A root `verify` command runs the checks used by CI. An agent task is complete when the affected checks pass and the relevant documentation matches the code. [AGENTS.md convention](https://agents.md/); [OpenAI Docs on concise agent instructions](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra); [Claude Code project instructions](https://code.claude.com/docs/en/memory).
+`AGENTS.md` stays short and points to the right document for a task. `CLAUDE.md` imports it to avoid duplicated instructions. A root `verify` command runs the checks used by CI. [AGENTS.md convention](https://agents.md/); [OpenAI Docs on concise agent instructions](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra); [Claude Code project instructions](https://code.claude.com/docs/en/memory).
+
+### Documentation is part of completion
+
+Markdown files are maintained as the service changes. A task is complete only when its checks pass **and its affected documentation is updated in the same change**. The implementation plan records decisions and progress during the work, not only after it finishes. The pull request template asks which documents changed or why no document was affected. CI checks Markdown format and local links; a reviewer checks whether the content still matches the behavior.
+
+Each document has one job:
+
+- `AGENTS.md` owns agent workflow and points to relevant commands and documents; `CLAUDE.md` imports it and holds only tool-specific additions.
+- `ARCHITECTURE.md` describes the system as it runs now; `doc/design/` describes approved changes; `doc/decisions/` records why a lasting boundary changed.
+- `README.md` and `CONTRIBUTING.md` own human setup, local commands, and the contribution workflow.
+- `doc/health/` owns the evidence and approved wording behind every health-facing rule; `doc/operations/` owns deployment, rollback, and incident steps.
+- `doc/exec/` holds the active plan, its progress, verification evidence, and any change in scope.
+
+Update only documents affected by a change. Do not copy the same rule across files: link to its owner so agents and humans read the same current instruction.
 
 ## CI/CD and production control
 
@@ -90,13 +104,13 @@ GitHub rulesets and deployment environments provide the merge and promotion cont
 
 This product spans independent subsystems. Each gets its own design review and execution plan. The next plan covers **only the first slice**:
 
-1. **Foundation and private recording:** create the harness, runnable iOS/Android app, foreground record/replay flow, provisional fun score, and real CI checks. Verify local setup from a clean clone, score fixtures, and recording on both platforms. No account, upload, ranking, sharing, or health claim ships in this slice.
+1. **Foundation and private recording:** create the harness, runnable iOS/Android app, foreground record/replay flow, provisional fun score, and real CI checks. Include the documentation update rule in `AGENTS.md`, `CONTRIBUTING.md`, and the PR template, with one owning source for each rule. Verify local setup from a clean clone, score fixtures, and recording on both platforms. No account, upload, ranking, sharing, or health claim ships in this slice.
 2. **Identity and verified ranking:** design Apple/Google sign-in, private storage, authoritative scoring, ranking, deletion timing, and access tests before implementation.
 3. **Optional audio sharing:** design playable links, consent, reporting, and revocation before implementation.
 4. **Digestive guidance:** design the entry schema, minimum data for a note, evidence register, clinical review, and safety copy before implementation.
 5. **Public release:** complete store review materials, privacy and retention policy, staging checks, monitoring, and rollback rehearsal. Select release regions during this slice; the current design does not assume a country list.
 
-The first slice is complete when a contributor can run the documented setup and verification commands, CI runs those same checks, and a tester can record, replay, and score a clip on both iPhone and Android. Later slices have their own acceptance criteria in their designs.
+The first slice is complete when a contributor can run the documented setup and verification commands, CI runs those same checks, a tester can record, replay, and score a clip on both iPhone and Android, and the repository instructions correctly describe the working app. Later slices have their own acceptance criteria in their designs.
 
 ## Current repository state
 
