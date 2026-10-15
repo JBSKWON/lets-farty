@@ -1,132 +1,103 @@
 # Let's Farty MVP Design
 
-**Status:** Proposed for owner review
+**Status:** Revised proposal for owner review
 
 **Date:** 2026-10-14
 
-**Repository:** `JBSKWON/lets-farty`
+## Shared understanding
 
-**Audience:** Product owner, human contributors, and coding agents
+The app should be fun to record and share, on both iPhone and Android. A user gets a playful score, can sign in with Apple or Google, and can opt into a global ranking. Sharing a result may include a playable recording, but audio sharing is a separate choice. The app should also give useful, serious digestive guidance over time from optional food, perceived smell, and symptom entries. The repository should help human and AI contributors work consistently and should support controlled CI/CD releases.
 
-## Purpose and success
+The user approved iPhone and Android, a managed backend model such as Supabase, and a small scoring service that we own and deploy on managed infrastructure. The service exists because the public ranking cannot trust a score calculated only on a user's phone.
 
-Let's Farty is a lighthearted iPhone and Android app for recording a fart, getting a reproducible fun score, and optionally sharing a result with playable audio. Users may enter a global ranking under an opt-in display name. The same app offers serious, source-backed digestive guidance from optional food, smell, and symptom entries over time. It shows personal audio trends as observations and does not interpret fart acoustics as a diagnosis without clinical validation.
+**Proposed choices for review:** Expo/React Native with TypeScript, Supabase as the managed provider, recording and provisional scoring before sign-in, a 0–100 score, a 20-second recording limit, one best score per person for each scoring version, and an unlisted playable web link for shares. These choices were not specified by the user and can change in this review.
 
-The MVP succeeds when a new user can record and score a clip, sign in with Apple or Google, opt into a server-verified ranking, share a result with or without audio, and receive useful private pattern notes after repeated entries. The owner can reproduce these flows on both iPhone and Android, trace every health statement to a source, and promote or roll back a release through documented CI/CD steps.
+## Evidence boundary
 
-## Product boundaries
+The fun score describes audible qualities. It is never a digestive-health score. A user's recordings can establish a personal acoustic baseline, but there is no validated interpretation of phone-recorded fart sound that diagnoses digestive disease. Published work on abdominal bowel sounds studies a different signal and remains preliminary. [Bowel-sound systematic review](https://pubmed.ncbi.nlm.nih.gov/30115115/).
 
-### Recording and scoring
+The first health insights will use logged symptoms and food alongside descriptive audio trends. A note can say, for example, that the user logged bloating after a particular food several times and suggest what to track next. It must name the observations behind the note, avoid claiming causation, and link to reviewed evidence. NIDDK describes symptom and food diaries as useful in evaluating gas symptoms. [NIDDK diagnosis guidance](https://www.niddk.nih.gov/health-information/digestive-diseases/gas-digestive-tract/diagnosis).
 
-- Recording is started and stopped by the user while the app is in the foreground. The app requests microphone permission in context and stops after 20 seconds.
-- The app rejects an empty, undecodable, or badly clipped recording with a retry prompt. It does not claim to prove the sound came from a human.
-- A local provisional score from 0 to 100 provides immediate feedback. Score copy is playful and describes audible properties such as length, variation, and rhythm. It never describes digestive health.
-- The scoring algorithm, its parameters, and its audio fixture corpus are versioned together. Each result records its scoring version. A score version change starts a new ranking season and archives the previous one, so scores from different versions are never compared silently.
-- A ranked result requires explicit submission of the recording to the backend. The backend computes the authoritative score from the uploaded audio. A client-supplied score is never trusted for ranking.
+Health-facing rules and copy need qualified clinical review before public release. They will not diagnose a condition, recommend medication, or imply that a quiet recording proves good health. Changed or persistent symptoms, and symptoms accompanied by pain, diarrhea, constipation, or weight loss, prompt a clear care-seeking message. [NIDDK symptoms guidance](https://www.niddk.nih.gov/health-information/digestive-diseases/gas-digestive-tract/symptoms-causes). Any future claim that audio predicts health requires a separate validation study and regulatory review before it reaches users. [FDA general wellness guidance](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/general-wellness-policy-low-risk-devices).
 
-### Accounts, ranking, and sharing
+## User flow
 
-- Recording and provisional scoring work without an account. Guest recordings and tags remain on the device for that session. Sign-in with Apple or Google is required to save a history, join the ranking, or host a shared result. Both providers are available on iOS and Android, using the platform-appropriate native or browser-based flow.
-- The global ranking shows each opted-in user's best verified score in the current scoring season. Ties use the earlier verified submission. It shows a chosen public display name and score, never food entries, symptom entries, smell tags, or an email address.
-- Ranking is opt-in and revocable. Leaving it removes the user's entry from public ranking. Deleting the account removes server-held recordings, feature history, and public identity according to the retention policy below, and clears this app's local history on that device.
-- The default share contains a score card without audio. A separate choice adds a playable recording. Hosted results use an unlisted link and a minimal web playback page so recipients do not need the app. The owner can disable the link and report misuse; link recipients can report a clip. The public page contains no health data.
-- A shared audio clip may be copied by a recipient. The app explains this before the user enables audio sharing. Disabling a link prevents future access through the service but cannot erase copies already downloaded.
+1. The user starts a foreground recording, replays it, and gets a provisional sound score with a short, playful explanation. An empty or unreadable clip asks for a retry.
+2. Apple or Google sign-in lets the user save a history. Optional food, smell, and symptom entries are private. Smell is self-reported; audio does not measure it.
+3. Joining the global ranking requires a separate opt-in and an audio upload. The service checks the recording and calculates the ranked score itself. The ranking shows a chosen display name and that user's best verified score for the current scoring version. Changing the scoring method starts a new ranking version rather than comparing incompatible scores.
+4. Sharing a result is separate from ranking. The default shared page shows the score. The user may add playable audio explicitly. Shared pages contain no health entries. The user can disable the link; recipients can report misuse. A recipient may still keep a copy of audio already downloaded, which the app explains before sharing.
+5. After repeated private entries, the app shows simple personal trends and evidence-linked gut notes. Audio changes are labeled as observations without a disease interpretation.
 
-### Personal baseline and digestive guidance
-
-- Users may add simple food, perceived smell, gas frequency, bloating, abdominal pain, and bowel-habit tags after a recording. Guest tags stay in the local session; signed-in users may save them to a private history. Smell is self-reported; the microphone does not measure it.
-- The baseline summarizes observable changes in that user's audio features and entries over time. It labels small sample sizes and missing data. It does not map acoustic changes to a disease, risk score, or reassurance of health.
-- Guidance uses versioned, evidence-linked rules and states which user entries led to each note. Examples include recurring associations between a logged food and symptoms, what to keep tracking, and when changed or persistent symptoms warrant a clinician conversation. These are associations, not proof of a cause.
-- Health-facing copy is reviewed by a qualified clinician before public release. Rules do not diagnose, recommend medication, or advise delaying care. Potentially concerning symptom entries route to a clearly worded care-seeking message instead of a playful interpretation.
-- Audio-based medical claims remain a research track. Before release of such a claim, the team must define the intended use and reference outcome, collect consented and appropriately labeled data, test across users and devices on held-out data, assess calibration and error harms, obtain clinical review, and review applicable regulatory requirements.
-
-## Technical approach
-
-### Components and data flow
-
-1. **Mobile:** Expo and React Native with TypeScript target iOS and Android from one codebase. Platform-specific microphone, Apple/Google sign-in, permissions, and release settings remain explicitly tested on both platforms.
-2. **Managed data services:** Supabase provides authentication, Postgres, and private object storage. Database migrations and row-level access policies live in the repository. Client credentials have the minimum access needed; service credentials never ship in the app.
-3. **Application API:** One containerized TypeScript service on managed hosting verifies authentication, reads a submitted private recording, decodes it, computes the authoritative score, maintains ranking records, serves unlisted share pages and playback, and evaluates versioned gut-insight rules. It is modular within one deployable service for the MVP.
-4. **Shared contracts:** Typed request and response schemas are shared between mobile, API, and the share page. Contract changes include compatibility tests.
-5. **Share page:** A small mobile-friendly web page plays a shared clip after checking that the link remains active. It includes a report control and no private health fields.
-
-The mobile app computes provisional acoustic features. A signed-in user can save those features without uploading raw audio. For a ranked or hosted result, the API recomputes them from the uploaded clip and stores the verified version. A ranking-only upload is removed within 24 hours after processing unless the user separately enables hosted audio sharing. A hosted clip remains until its owner disables sharing or deletes the account. Private health entries and derived features remain until the user deletes them or the account. Production backups follow the managed provider's documented retention and deletion behavior, which must be reflected in the published privacy policy before launch.
-
-### Trust boundaries
-
-- Audio, food, smell, and symptoms are private user data. Sharing and ranking have separate consents.
-- Postgres policies enforce per-user reads and writes. The API performs authorization again for privileged operations. Access-policy tests cover cross-user reads and writes.
-- Public ranking reads from a narrow published projection. Public share access uses an opaque link token checked by the API on every request; the underlying storage bucket remains private.
-- Uploaded audio is treated as untrusted input. The API limits file size, duration, format, and processing time. It rate-limits submissions and logs abuse signals without logging raw audio or health entries.
-- The leaderboard is a game feature. Server verification raises the cost of basic cheating, but does not establish that a recording is genuine.
-
-## Repository convention
-
-The repository is a pnpm workspace. Directories appear when their first implementation lands; empty placeholder packages are not maintained.
+## Architecture and data boundaries
 
 ```text
-AGENTS.md                  Agent task map, safe commands, and completion rules
-CLAUDE.md                 Imports AGENTS.md; only Claude-specific additions
-ARCHITECTURE.md           Current component map and trust boundaries
-README.md                 Product overview and first-run instructions
-CONTRIBUTING.md           Local workflow and pull request expectations
-SECURITY.md               Private vulnerability reporting process
-apps/mobile/              Expo app
-apps/share/               Minimal shared-result web page
-services/api/             Scoring, ranking, sharing, and insight modules
-packages/contracts/       Shared schemas and generated types
-packages/scoring/         Pure scoring logic and audio fixtures
-infra/supabase/           Migrations, policies, storage configuration
-doc/design/               Approved product and architecture designs
-doc/exec/                 Executable plans with progress and verification
-doc/decisions/            Architecture decision records
-doc/health/               Sources, claim register, clinical review, research protocol
-doc/operations/           Deployment, rollback, privacy, and incident runbooks
-.github/                  CI/CD workflows, PR template, CODEOWNERS
+Expo/React Native app (TypeScript)
+  ├─ local recording, playback, provisional score
+  ├─ private history and optional check-ins
+  └─ Apple/Google sign-in
+          │
+          ├─ Supabase Auth + Postgres + private Storage
+          │     └─ per-user access policies and migrations in Git
+          └─ one TypeScript API service on managed hosting
+                ├─ authoritative scoring and ranking writes
+                ├─ share-link access and audio playback
+                └─ versioned, evidence-linked insight rules
 ```
 
-`AGENTS.md` is concise and points agents to documents by task. `CLAUDE.md` imports `AGENTS.md` so the two instruction files do not drift. Local verification uses one documented root command, `pnpm verify`, which CI runs unchanged. Architecture decisions record context, choice, consequences, and a review trigger. Design changes update the relevant document and tests in the same pull request.
+The app and API share request and response schemas and pure scoring logic only when the same implementation can run in both environments. The API remains one deployable service with focused modules. A small web page handles shared results. Platform permissions, sign-in, audio behavior, and builds are tested on both iOS and Android. [React Native TypeScript](https://reactnative.dev/docs/typescript); [Expo Audio](https://docs.expo.dev/versions/latest/sdk/audio/); [Supabase social auth](https://supabase.com/docs/guides/auth/quickstarts/with-expo-react-native-social-auth).
+
+Private recordings, check-ins, and derived features are accessible only to their owner. Ranking and audio sharing use separate opt-ins. A shared link checks whether the share remains active; storage itself stays private. The API restricts audio size, format, duration, and processing time, and never logs recordings or health entries. Nonshared uploads are deleted after scoring and a bounded retry period. The exact retry period, backup behavior, and account-deletion timing must be specified and tested in the upload slice before that feature is built. [Supabase storage controls](https://supabase.com/docs/guides/storage/security/access-control); [OWASP MASVS](https://mas.owasp.org/MASVS/).
+
+Server scoring reduces easy leaderboard cheating but cannot prove who made a sound. The app must describe the ranking as a game, not a verified human competition.
+
+## Repository harness
+
+Use one GitHub repository and a small workspace. Create directories when a slice needs them rather than maintaining empty packages.
+
+```text
+AGENTS.md                 Agent task map and relevant commands
+CLAUDE.md                Imports AGENTS.md; Claude-specific notes only
+ARCHITECTURE.md          Current components and data boundaries
+README.md                Human setup and product overview
+CONTRIBUTING.md          Change, review, and verification workflow
+SECURITY.md              Vulnerability reporting
+apps/mobile/             Cross-platform app
+apps/share/              Shared-result web page, when sharing is built
+services/api/            Scoring, ranking, sharing, insights, as slices land
+packages/contracts/      Shared schemas, when an API is introduced
+packages/scoring/        Shared scoring code, only if needed on both sides
+infra/supabase/          Migrations and access policies
+doc/design/              Approved designs
+doc/exec/                Checkable execution plans
+doc/decisions/           Decisions that change system boundaries
+doc/health/              Evidence and approved health claims
+doc/operations/          Release and incident runbooks
+.github/                 Workflows, PR template, ownership rules
+```
+
+`AGENTS.md` stays short and points to the right document for a task. `CLAUDE.md` imports it to avoid duplicated instructions. A root `verify` command runs the checks used by CI. An agent task is complete when the affected checks pass and the relevant documentation matches the code. [AGENTS.md convention](https://agents.md/); [OpenAI Docs on concise agent instructions](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra); [Claude Code project instructions](https://code.claude.com/docs/en/memory).
 
 ## CI/CD and production control
 
-- **Pull requests:** GitHub Actions installs from the committed lockfile and runs formatting, linting, type checks, unit tests, API contract tests, scoring fixture tests, data access policy tests, and a build check. Dependency and secret checks run on every pull request. Platform smoke checks use iOS and Android development builds for release candidates.
-- **Protected main:** GitHub rules require a pull request, passing required checks, and review. `CODEOWNERS` covers health claims, database policies, and deployment workflows. Actual GitHub rules and environment protections must be configured on the remote; repository files alone cannot enforce them.
-- **Staging:** A merge deploys database migrations and the API to staging, then runs smoke tests. Mobile preview builds point to staging. Schema changes are additive or use a documented expand-and-contract migration.
-- **Production:** A tagged release creates reproducible mobile builds and an API artifact. Promotion requires successful staging evidence and a protected GitHub production environment. The release record includes app version, API revision, migration version, and scoring and insight-rule versions.
-- **Rollback:** The API can return to a prior image; mobile releases use store rollout controls and compatible APIs; risky features have kill switches. Database migration rollback is a documented forward fix when a destructive reverse migration would lose data.
-- **Operations:** Structured logs, error rates, score job failures, upload failures, and share-page availability are monitored. Logs and analytics exclude audio and health-entry content. A runbook identifies owners, alert thresholds, and incident response steps before production launch.
+- **For every pull request:** GitHub Actions runs the repository's `verify` command. As features land, it covers formatting, types, focused tests, API contracts, scoring fixtures, and cross-user access tests. A lockfile, dependency checks, and secret scanning protect the build.
+- **For merges:** protect `main` with required checks and review. Changes to health claims, access policies, and deployment workflows get named owners when those owners exist. These settings must be enabled on GitHub; files in the checkout cannot enforce them by themselves.
+- **For staging and release:** CI builds both mobile platforms and deploys backend changes to staging. Smoke checks precede a protected production promotion. The release record identifies the app, API, migration, scoring, and insight-rule versions. A documented API rollback and a compatible mobile rollout path are required before launch.
+- **For operations:** monitor failed recordings/uploads, scoring failures, API errors, and share-page availability. Logs exclude private audio and health content. The runbook states who responds and how to disable sharing or ranking during an incident.
 
-The GitHub repository and cloud projects need their own credentials and settings. CI uses least-privilege tokens and short-lived cloud identity where supported. No production credential is committed to Git.
+GitHub rulesets and deployment environments provide the merge and promotion controls. Cloud credentials should use short-lived identity where available. [GitHub rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets); [GitHub deployment environments](https://docs.github.com/en/actions/concepts/workflows-and-actions/deployment-environments); [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final).
 
-## Delivery slices and acceptance
+## Delivery scope and checks
 
-1. **Harness and runnable shell:** repository instructions, docs, workspace, verification command, CI checks, empty mobile/API entry points, and a staging release path. A new contributor can run the documented setup and checks.
-2. **Private recording and score:** permission flow, local capture/playback, scoring fixtures, and result card work on iOS and Android.
-3. **Accounts and ranking:** Apple/Google sign-in, authoritative upload scoring, opt-in global ranking, access policies, and abuse limits work in staging.
-4. **Sharing:** score-only and opt-in playable-audio links, link disabling, misuse reporting, and deletion behavior work end to end.
-5. **Gut insights:** optional entries, baseline observations, evidence-linked rules, clinician-reviewed copy, sample-size language, and privacy/deletion tests work end to end.
-6. **Release readiness:** both mobile builds, store metadata and privacy disclosures, staging smoke checks, monitoring, and rollback rehearsal are complete before production promotion.
+This product spans independent subsystems. Each gets its own design review and execution plan. The next plan covers **only the first slice**:
 
-Each slice is independently reviewable and has an execution plan under `doc/exec/` before product code is written.
+1. **Foundation and private recording:** create the harness, runnable iOS/Android app, foreground record/replay flow, provisional fun score, and real CI checks. Verify local setup from a clean clone, score fixtures, and recording on both platforms. No account, upload, ranking, sharing, or health claim ships in this slice.
+2. **Identity and verified ranking:** design Apple/Google sign-in, private storage, authoritative scoring, ranking, deletion timing, and access tests before implementation.
+3. **Optional audio sharing:** design playable links, consent, reporting, and revocation before implementation.
+4. **Digestive guidance:** design the entry schema, minimum data for a note, evidence register, clinical review, and safety copy before implementation.
+5. **Public release:** complete store review materials, privacy and retention policy, staging checks, monitoring, and rollback rehearsal. Select release regions during this slice; the current design does not assume a country list.
 
-## Evidence and reference standards
+The first slice is complete when a contributor can run the documented setup and verification commands, CI runs those same checks, and a tester can record, replay, and score a clip on both iPhone and Android. Later slices have their own acceptance criteria in their designs.
 
-- [NIDDK: diagnosis of gas symptoms](https://www.niddk.nih.gov/health-information/digestive-diseases/gas-digestive-tract/diagnosis) supports using symptoms, diet history, and a diary for guidance.
-- [NIDDK: symptoms and causes](https://www.niddk.nih.gov/health-information/digestive-diseases/gas-digestive-tract/symptoms-causes) supports the care-seeking messages.
-- [Systematic review of bowel-sound analysis](https://pubmed.ncbi.nlm.nih.gov/30115115/) describes preliminary evidence on abdominal bowel sounds, a different signal from phone-recorded flatulence.
-- [FDA general wellness guidance](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/general-wellness-policy-low-risk-devices) informs claim boundaries for a US release.
-- [React Native TypeScript documentation](https://reactnative.dev/docs/typescript), [Expo Audio](https://docs.expo.dev/versions/latest/sdk/audio/), and [Flutter's single-codebase documentation](https://flutter.dev/development) inform the cross-platform choice.
-- [Supabase React Native social authentication](https://supabase.com/docs/guides/auth/quickstarts/with-expo-react-native-social-auth) and [private storage access controls](https://supabase.com/docs/guides/storage/security/access-control) inform the managed backend design.
-- [AGENTS.md convention](https://agents.md/) and [OpenAI Docs on agent instructions](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra) inform the agent-facing repository contract.
-- [Claude Code project instructions](https://code.claude.com/docs/en/memory) supports importing `AGENTS.md` from `CLAUDE.md`.
-- [GitHub rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) and [deployment environments](https://docs.github.com/en/actions/concepts/workflows-and-actions/deployment-environments) inform merge and promotion controls.
-- [OWASP MASVS](https://mas.owasp.org/MASVS/) is the mobile security verification baseline.
-- [NIST Secure Software Development Framework](https://csrc.nist.gov/pubs/sp/800/218/final) informs repository, build, and release security practices.
+## Current repository state
 
-## Risks and deliberate limits
-
-- A personal audio baseline can show change, but currently has no validated digestive interpretation. Health guidance derives from user entries and reviewed sources until a separate validation study supports more.
-- Microphone hardware, distance, room acoustics, and background noise affect scores. The fixture corpus and device testing constrain regressions but do not make scores comparable across every environment.
-- Unlisted audio links can be forwarded. Sharing is separate from ranking, audio starts off, and users can disable hosted access.
-- Store approval, medical claims, and privacy requirements vary by release region. The first public release scope is Canada and the United States, subject to store and regulatory review before submission.
-- The local checkout currently has no commits or remote. The supplied GitHub repository must be inspected and connected before branch protection or deployment can be configured.
+The local checkout contains this design commit but no configured Git remote. Inspect the supplied `JBSKWON/lets-farty` remote before connecting, pulling, or pushing, so any existing GitHub history is preserved. Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.
