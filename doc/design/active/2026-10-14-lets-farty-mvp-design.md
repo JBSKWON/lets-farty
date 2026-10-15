@@ -151,4 +151,4 @@ Foundation is complete when a fresh checkout can launch the shell on both platfo
 
 ## Current repository state
 
-The local checkout contains the MVP design and documentation lifecycle structure. The design is awaiting owner review; no execution plan or application implementation exists yet. No Git remote is configured. Inspect the supplied `JBSKWON/lets-farty` remote before connecting, pulling, or pushing, so any existing GitHub history is preserved. Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.
+The local checkout contains the MVP design and documentation lifecycle structure. The design is awaiting owner review; no execution plan or application implementation exists yet. The checkout is connected to `JBSKWON/lets-farty`, and the GitHub initial commit has been merged into local history. Codex Cloud environment publication is a separate account setup step described in the [root README](../../../README.md). Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.
