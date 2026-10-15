@@ -1,8 +1,16 @@
 # Let's Farty MVP Design
 
-**Status:** Revised proposal for owner review
+**Status:** 🟡 In progress
 
 **Date:** 2026-10-14
+
+**Updated:** 2026-10-14
+
+**Review:** Awaiting owner review
+
+**Next action:** Review the proposed stack and bootstrap scope, then write the foundation execution plan with acceptance checks.
+
+**Lifecycle:** [Documentation rules](../../README.md)
 
 ## Shared understanding
 
@@ -52,11 +60,11 @@ Server scoring reduces easy leaderboard cheating but cannot prove who made a sou
 
 ## Repository harness
 
-Use one GitHub repository and a small workspace. Create directories when a slice needs them rather than maintaining empty packages.
+Use one GitHub repository and a small workspace. The tree below is the intended structure as features land. Create directories when a slice needs them rather than maintaining empty packages; the requested documentation lifecycle folders are retained from the start.
 
 ```text
-AGENTS.md                 Agent task map and relevant commands
-CLAUDE.md                Imports AGENTS.md; Claude-specific notes only
+AGENTS.md                 Concise agent workflow, task-specific links, and verification commands
+CLAUDE.md                Imports AGENTS.md; Claude-specific additions only
 ARCHITECTURE.md          Current components and data boundaries
 README.md                Human setup and product overview
 CONTRIBUTING.md          Change, review, and verification workflow
@@ -67,8 +75,11 @@ services/api/            Scoring, ranking, sharing, insights, as slices land
 packages/contracts/      Shared schemas, when an API is introduced
 packages/scoring/        Shared scoring code, only if needed on both sides
 infra/supabase/          Migrations and access policies
-doc/design/              Approved designs
-doc/exec/                Checkable execution plans
+doc/README.md            Documentation lifecycle, status rules, and index
+doc/design/active/       Designs being drafted or reviewed, including blocked designs
+doc/design/completed/    Approved design snapshots; implementation may still be pending
+doc/exec/active/         Execution plans in progress, including blocked plans
+doc/exec/completed/      Finished plans with verification evidence
 doc/decisions/           Decisions that change system boundaries
 doc/health/              Evidence and approved health claims
 doc/operations/          Release and incident runbooks
@@ -77,21 +88,46 @@ doc/operations/          Release and incident runbooks
 
 `AGENTS.md` stays short and points to the right document for a task. `CLAUDE.md` imports it to avoid duplicated instructions. A root `verify` command runs the checks used by CI. [AGENTS.md convention](https://agents.md/); [OpenAI Docs on concise agent instructions](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra); [Claude Code project instructions](https://code.claude.com/docs/en/memory).
 
+### Repository bootstrap order
+
+Anthropic recommends exploring before planning and implementation, giving the agent executable verification, and keeping project instructions concise. Its long-running agent experiment uses an initial environment setup, explicit feature criteria, and durable progress notes to support later sessions. [Claude Code best practices](https://code.claude.com/docs/en/best-practices); [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents).
+
+For Let's Farty, the first milestone is a reproducible app shell with a working verification loop. The following order is our adaptation of that guidance. It assumes the proposed Expo/React Native stack is approved before scaffolding.
+
+| Order | Setup work | Evidence required to finish |
+| --- | --- | --- |
+| 1. Inspect the repository | Check local changes, Git history, existing instructions, and the supplied GitHub repository. Establish which history to build on before connecting or importing it. | Record the starting revision, existing work to preserve, and any remote-access blocker. |
+| 2. Define the foundation outcome | Approve the bootstrap scope and create one execution plan in `doc/exec/active/`, linked to this design. Include acceptance checks, dependencies, progress, decisions, and the next action. | Each acceptance criterion has a concrete verification method; unresolved required decisions are visible. |
+| 3. Establish minimal instructions | Add `AGENTS.md`, a `CLAUDE.md` import, and concise `README.md`, `CONTRIBUTING.md`, and `ARCHITECTURE.md`. Link to `doc/README.md` for lifecycle rules. | Instructions agree, links resolve, and architecture describes only what exists. Commands are added as they become runnable. |
+| 4. Make the environment reproducible | Pin the runtime and package manager, commit a lockfile, and create `apps/mobile/` with a launchable shell. Add setup, development, and root `verify` commands. Document any native tooling prerequisites. | A clean checkout can install dependencies, run verification, and launch the shell on iOS and Android using the documented steps. |
+| 5. Enforce the same checks in CI | Add GitHub Actions running `verify`, the PR documentation prompt, and required-check/review settings where available. Start with formatting, types, documentation links, and lifecycle validation. | CI passes for the starting state and fails for a deliberate violation checked in a disposable change; required repository settings are confirmed on GitHub. |
+| 6. Hand off a verified starting point | Record commands, results, platform checks, limitations, and the next feature in the execution plan. Update the reference docs to match the working shell. | A new contributor or agent can start and verify the app from repository instructions without relying on this conversation. |
+
+Use package scripts as the setup and verification entry points. Add an `init.sh` only if actual environment setup needs it. Keep progress and acceptance evidence in the active execution plan; introduce a separate machine-readable feature registry only if automation needs one. Backend, sharing, and shared-package directories arrive with their consuming features. Add agent hooks or orchestration only in response to a demonstrated workflow problem.
+
+### Workflow after bootstrap
+
+Each work session reads the short root instructions, the relevant design and active plan, and the current Git state. Run the relevant baseline check, implement one bounded acceptance criterion, verify the result, and update affected Markdown and the plan before handoff. A plan records what changed, what passed, what remains, and the next action. Failed or unavailable checks remain visible; they cannot be reported as passing.
+
+This follows Anthropic's emphasis on incremental progress and tested completion. Its later harness research also distinguishes implementation from evaluation. For this MVP, concrete acceptance evidence and review provide that separation; a custom multi-agent system is not a bootstrap requirement. [Long-running agent harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); [Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps).
+
 ### Documentation is part of completion
 
-Markdown files are maintained as the service changes. A task is complete only when its checks pass **and its affected documentation is updated in the same change**. The implementation plan records decisions and progress during the work, not only after it finishes. The pull request template asks which documents changed or why no document was affected. CI checks Markdown format and local links; a reviewer checks whether the content still matches the behavior.
+Markdown files are maintained as the service changes. A task is complete only when its checks pass **and its affected documentation is updated in the same change**. The implementation plan records decisions and progress during the work, not only after it finishes. The pull request template asks which documents changed or why no document was affected. CI will check Markdown format, local links, and the status/location rules in [the documentation lifecycle](../../README.md); a reviewer checks whether the content still matches the behavior. These checks are part of the foundation slice and are not installed yet.
 
 Each document has one job:
 
 - `AGENTS.md` owns agent workflow and points to relevant commands and documents; `CLAUDE.md` imports it and holds only tool-specific additions.
-- `ARCHITECTURE.md` describes the system as it runs now; `doc/design/` describes approved changes; `doc/decisions/` records why a lasting boundary changed.
+- `ARCHITECTURE.md` describes the system as it runs now; `doc/design/active/` holds proposals and `doc/design/completed/` holds approved designs; `doc/decisions/` records why a lasting boundary changed.
 - `README.md` and `CONTRIBUTING.md` own human setup, local commands, and the contribution workflow.
 - `doc/health/` owns the evidence and approved wording behind every health-facing rule; `doc/operations/` owns deployment, rollback, and incident steps.
-- `doc/exec/` holds the active plan, its progress, verification evidence, and any change in scope.
+- `doc/README.md` owns document status, completion, and move rules. `doc/exec/active/` holds ongoing plans and `doc/exec/completed/` preserves finished plans, decisions, and verification evidence.
 
 Update only documents affected by a change. Do not copy the same rule across files: link to its owner so agents and humans read the same current instruction.
 
 ## CI/CD and production control
+
+Introduce CI during bootstrap, before product features. Add delivery pipelines as deployable components appear: mobile build verification in the private-recording slice, backend staging when the API is introduced, and production promotion before public launch. The controls below are the target; their actual enabled state is recorded in the execution plan and operations documentation.
 
 - **For every pull request:** GitHub Actions runs the repository's `verify` command. As features land, it covers formatting, types, focused tests, API contracts, scoring fixtures, and cross-user access tests. A lockfile, dependency checks, and secret scanning protect the build.
 - **For merges:** protect `main` with required checks and review. Changes to health claims, access policies, and deployment workflows get named owners when those owners exist. These settings must be enabled on GitHub; files in the checkout cannot enforce them by themselves.
@@ -102,16 +138,17 @@ GitHub rulesets and deployment environments provide the merge and promotion cont
 
 ## Delivery scope and checks
 
-This product spans independent subsystems. Each gets its own design review and execution plan. The next plan covers **only the first slice**:
+This product spans independent subsystems. Each gets its own design review and execution plan. The next plan covers **only repository bootstrap and a runnable app shell**:
 
-1. **Foundation and private recording:** create the harness, runnable iOS/Android app, foreground record/replay flow, provisional fun score, and real CI checks. Include the documentation update rule in `AGENTS.md`, `CONTRIBUTING.md`, and the PR template, with one owning source for each rule. Verify local setup from a clean clone, score fixtures, and recording on both platforms. No account, upload, ranking, sharing, or health claim ships in this slice.
-2. **Identity and verified ranking:** design Apple/Google sign-in, private storage, authoritative scoring, ranking, deletion timing, and access tests before implementation.
-3. **Optional audio sharing:** design playable links, consent, reporting, and revocation before implementation.
-4. **Digestive guidance:** design the entry schema, minimum data for a note, evidence register, clinical review, and safety copy before implementation.
-5. **Public release:** complete store review materials, privacy and retention policy, staging checks, monitoring, and rollback rehearsal. Select release regions during this slice; the current design does not assume a country list.
+1. **Foundation:** complete the bootstrap order above: minimal instructions, a reproducible iOS/Android app shell, documentation validation, CI, and confirmed repository controls. Product features follow after this checkpoint.
+2. **Private recording:** design and implement foreground recording, replay, and a provisional fun score. Verify microphone permission handling, unusable clips, score fixtures, and the complete flow on both platforms. Establish mobile build checks. No account or upload is required for this slice.
+3. **Identity and verified ranking:** design Apple/Google sign-in, private storage, authoritative scoring, ranking, deletion timing, and access tests before implementation.
+4. **Optional audio sharing:** design playable links, consent, reporting, and revocation before implementation.
+5. **Digestive guidance:** design the entry schema, minimum data for a note, evidence register, clinical review, and safety copy before implementation.
+6. **Public release:** complete store review materials, privacy and retention policy, staging checks, monitoring, and rollback rehearsal. Select release regions during this slice; the current design does not assume a country list.
 
-The first slice is complete when a contributor can run the documented setup and verification commands, CI runs those same checks, a tester can record, replay, and score a clip on both iPhone and Android, and the repository instructions correctly describe the working app. Later slices have their own acceptance criteria in their designs.
+Foundation is complete when a fresh checkout can launch the shell on both platforms, local and CI verification pass, repository controls are confirmed, and the docs and plan contain reproducible evidence. Missing platform access or GitHub permissions remain explicit blockers for the corresponding criteria. Recording completion requires a separate end-to-end demonstration of record, replay, and score on both iPhone and Android. Later slices have their own acceptance criteria in their designs.
 
 ## Current repository state
 
-The local checkout contains this design commit but no configured Git remote. Inspect the supplied `JBSKWON/lets-farty` remote before connecting, pulling, or pushing, so any existing GitHub history is preserved. Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.
+The local checkout contains the MVP design and documentation lifecycle structure. The design is awaiting owner review; no execution plan or application implementation exists yet. No Git remote is configured. Inspect the supplied `JBSKWON/lets-farty` remote before connecting, pulling, or pushing, so any existing GitHub history is preserved. Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.
