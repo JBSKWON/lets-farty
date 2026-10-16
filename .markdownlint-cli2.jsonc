@@ -1,0 +1,35 @@
+{
+  "config": {
+    "MD013": false,
+    "MD024": {
+      "siblings_only": true
+    },
+    "MD033": {
+      "allowed_elements": [
+        "a"
+      ]
+    }
+  },
+  "globs": [
+    "**/*.md"
+  ],
+  "ignores": [
+    "node_modules/**",
+    ".git/**",
+    ".superpowers/**",
+    "coverage/**",
+    "dist/**",
+    "build/**"
+  ],
+  "overrides": [
+    {
+      "filter": [
+        "CLAUDE.md"
+      ],
+      "config": {
+        "MD041": false
+      },
+      "combine": "merge"
+    }
+  ]
+}

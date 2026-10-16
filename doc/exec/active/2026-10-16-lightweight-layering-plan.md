@@ -182,3 +182,5 @@ Before implementation, record owner approval of the layering scope and tooling c
 - 2026-10-16 Task 1: runner tests observed RED (missing implementation), then GREEN (5/5). `npm ci` and `npm test` exited 0. Tool versions: dependency-cruiser 18.6.0, github-slugger 2.0.0, markdownlint-cli2 0.23.3, remark-gfm 4.0.1, remark-parse 11.0.0, typescript 6.0.3, unified 11.0.5. TypeScript 7 lacked the required compiler API and was incompatible with dependency-cruiser (<7); pinned supported TypeScript 6 instead.
 
 - 2026-10-16 Task 2: 95 architecture fixtures and 5 runner tests passed (100 total); `node tools/architecture/check.mjs` passed against the source-free product checkout. Resolver uses consumer tsconfig, explicit package exports, and unbounded graph traversal followed by input-group filtering; a depth limit was rejected after cycle/barrel fixtures exposed skipped edges.
+
+- 2026-10-16 Task 3: docs fixtures observed RED on missing checker, then full `npm test` passed 126/126. `npm run check:docs` exited 0. Formatting found only CLAUDE.md MD041; the config exempts that rule for this one file to preserve its required import.
