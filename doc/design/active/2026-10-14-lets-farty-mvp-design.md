@@ -4,7 +4,7 @@
 
 **Date:** 2026-10-14
 
-**Updated:** 2026-10-15
+**Updated:** 2026-10-16
 
 **Review:** Awaiting owner review
 
@@ -60,7 +60,7 @@ Server scoring reduces easy leaderboard cheating but cannot prove who made a sou
 
 ## Repository harness
 
-The [lightweight layering proposal](2026-10-15-lightweight-layering-design.md) specifies dependency boundaries and their planned verification tooling. It is awaiting review and does not change this design's pending stack and product decisions.
+The [lightweight layering proposal](../completed/2026-10-15-lightweight-layering-design.md) specifies dependency boundaries and their planned verification tooling. It is awaiting review and does not change this design's pending stack and product decisions.
 
 Use one GitHub repository and a small workspace. The tree below is the intended structure as features land. Create directories when a slice needs them rather than maintaining empty packages; the requested documentation lifecycle folders are retained from the start.
 
@@ -153,4 +153,4 @@ Foundation is complete when a fresh checkout can launch the shell on both platfo
 
 ## Current repository state
 
-The local checkout contains the MVP and lightweight layering designs, documentation lifecycle structure, and root agent instructions. The root `AGENTS.md` and its `CLAUDE.md` import were adopted on 2026-10-15 at the owner's request. The designs remain awaiting review; no execution plan or application implementation exists yet. The checkout is connected to `JBSKWON/lets-farty`, and the GitHub initial commit has been merged into local history. Codex Cloud environment publication is a separate account setup step described in the [root README](../../../README.md). Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.
+The local checkout contains the MVP and lightweight layering designs, documentation lifecycle structure, and root agent instructions. The root `AGENTS.md` and its `CLAUDE.md` import were adopted on 2026-10-15 at the owner's request. A [lightweight layering execution plan](../../exec/active/2026-10-16-lightweight-layering-plan.md) was drafted for review on 2026-10-16. The designs remain awaiting review; no application implementation exists yet. The layering plan covers verification tooling; the foundation app-shell plan remains separate. The checkout is connected to `JBSKWON/lets-farty`, and the GitHub initial commit has been merged into local history. Codex Cloud environment publication is a separate account setup step described in the [root README](../../../README.md). Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.

@@ -1,18 +1,26 @@
 # Lightweight Layering Design
 
-**Status:** 🟡 In progress
+**Status:** ✅ Completed
 
 **Date:** 2026-10-15
 
-**Updated:** 2026-10-15
+**Updated:** 2026-10-16
 
-**Review:** Awaiting owner review of this written specification
+**Review:** Owner approved layering/tooling implementation through the explicit inline-execution request on 2026-10-16.
 
-**Next action:** Review this specification, then create its execution plan before implementation.
+**Approved by:** Repository owner (this conversation)
+
+**Approved on:** 2026-10-16
+
+**Approval scope:** Dependency-boundary guidance, verification tooling, documentation validation, and CI in the linked plan; application stack and product slices remain deferred to the MVP design.
+
+**Next action:** Follow the active execution plan and record implementation verification there.
 
 **Lifecycle:** [Documentation rules](../../README.md)
 
-**Related design:** [MVP and repository bootstrap](2026-10-14-lets-farty-mvp-design.md)
+**Related design:** [MVP and repository bootstrap](../active/2026-10-14-lets-farty-mvp-design.md)
+
+**Execution plan:** [Lightweight layering implementation plan](../../exec/active/2026-10-16-lightweight-layering-plan.md), approved for inline execution by the owner on 2026-10-16; implementation progress is tracked in the plan.
 
 ## Intent and scope
 
@@ -109,4 +117,4 @@ The root command also checks Markdown links and the metadata/status/location req
 
 The foundation app-shell slice owns application stack approval, native prerequisites, and launching iOS/Android. Private recording owns microphone and playback checks and scoring fixtures. Identity/ranking owns the initial API, Supabase migrations, access-policy tests, and authoritative scoring. Sharing and digestive guidance own their modules and domain-specific acceptance checks.
 
-After owner review, create an execution plan in `doc/exec/active/` with reciprocal links and the exact tooling choices, commands, fixtures, and implementation steps. Record the scope and evidence of approval according to the documentation workflow. Keep this specification active until that approval is recorded.
+The owner requested a draft execution plan on 2026-10-16. The linked plan specifies tooling choices, commands, fixtures, and implementation steps for review. Record the scope and evidence of approval according to the documentation workflow before implementation. Approval was recorded on 2026-10-16; this approved design snapshot is completed, while implementation continues in the active plan.

@@ -18,9 +18,9 @@ doc/
 Keep the existing `design` and `exec` names. Each contains exactly two lifecycle folders. Empty folders use `.gitkeep` so Git preserves them; remove the placeholder when the first document arrives.
 
 - Active design: [Let's Farty MVP](design/active/2026-10-14-lets-farty-mvp-design.md), awaiting owner review; includes the repository bootstrap order and its verification criteria.
-- Active design: [Lightweight layering](design/active/2026-10-15-lightweight-layering-design.md), awaiting owner review; defines dependency boundaries and the verification-tooling scope before application code arrives.
-- Active execution plans: none yet.
-- Completed designs and execution plans: none yet.
+- Completed design: [Lightweight layering](design/completed/2026-10-15-lightweight-layering-design.md), approved for implementation on 2026-10-16; defines dependency boundaries and the verification-tooling scope before application code arrives.
+- Active execution plan: [Lightweight layering](exec/active/2026-10-16-lightweight-layering-plan.md), approved for inline execution; verification tooling is in progress.
+- Completed execution plans: none yet.
 
 Agent guidance is maintained in the root [AGENTS.md](../AGENTS.md), following the [open convention](https://github.com/agentsmd/agents.md). [CLAUDE.md](../CLAUDE.md) imports it. Add nested instruction files only when an implemented subproject needs distinct guidance.
 

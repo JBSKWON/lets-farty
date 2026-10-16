@@ -15,7 +15,7 @@ Let's Farty is currently in design. The checkout contains documentation and agen
 ## Task map
 
 - Product scope, data boundaries, and bootstrap sequence: [MVP design](doc/design/active/2026-10-14-lets-farty-mvp-design.md).
-- Proposed dependency rules and verification tooling: [lightweight layering design](doc/design/active/2026-10-15-lightweight-layering-design.md).
+- Proposed dependency rules and verification tooling: [lightweight layering design](doc/design/completed/2026-10-15-lightweight-layering-design.md).
 - Design/plan status, metadata, approvals, and document moves: [documentation workflow](doc/README.md).
 - Human overview and Codex Cloud setup: [README](README.md).
 
