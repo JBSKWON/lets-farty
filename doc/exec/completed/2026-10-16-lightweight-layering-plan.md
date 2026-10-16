@@ -2,13 +2,15 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Status:** 🟡 In progress
+**Status:** ✅ Completed
 
 **Date:** 2026-10-16
 
 **Updated:** 2026-10-16
 
-**Next action:** Execute the remaining tasks inline and record local and remote verification evidence.
+**Completed on:** 2026-10-16
+
+**Next action:** Review the verified `set-up` branch, then plan the separate foundation app-shell slice.
 
 **Review:** Owner authorized implementation of this layering/tooling plan using inline execution on 2026-10-16; broader MVP choices remain pending.
 
@@ -92,7 +94,7 @@ test('runner accepts successful child', async () => {
 - [x] **Step 2: Run `node --test tools/test/verify.test.mjs`.** Expect failure because the runner/helper exports do not exist; distinguish this expected failure from syntax or unrelated environment errors.
 - [x] **Step 3: Implement the interfaces and bootstrap.** Pin `24.19.0` in `.node-version`, `node: "24.19.0"` in `engines`, `packageManager: "npm@11.9.0"`, `private: true`, `type: "module"`, and `engine-strict=true` in `.npmrc`. Exclude `node_modules/`, coverage, and temporary output. Runner verifies exact Node/npm versions and uses child processes with inherited output; no shell interpolation. Initial `verify` runs the test script; Task 4 adds real scans.
 - [x] **Step 4: Install and lock tooling.** Run `npm install --save-dev --save-exact dependency-cruiser typescript markdownlint-cli2 unified remark-parse remark-gfm github-slugger`. Record resolved versions and compatibility evidence in this plan. Set `test` to `node --test tools/test/*.test.mjs`, then run `npm ci` and `npm test`; expect exit 0 and all runner tests passing without product secrets.
-- [x] **Step 5: Commit.** `git add .node-version .npmrc package.json package-lock.json .gitignore tools/verify.mjs tools/test/fixtures.mjs tools/test/verify.test.mjs doc/exec/active/2026-10-16-lightweight-layering-plan.md`; commit as `chore: establish pinned verification tooling`.
+- [x] **Step 5: Commit.** `git add .node-version .npmrc package.json package-lock.json .gitignore tools/verify.mjs tools/test/fixtures.mjs tools/test/verify.test.mjs doc/exec/completed/2026-10-16-lightweight-layering-plan.md`; commit as `chore: establish pinned verification tooling`.
 
 ## Task 2: Enforce architecture through the resolver and source AST
 
@@ -195,7 +197,7 @@ Implemented pinned verification tooling, source-boundary policy/resolution/AST c
 
 ## Verification evidence
 
-- `npm test`: 126/126 passing before independent review.
+- `npm test`: 126/126 before independent review; 141/141 after all regression fixes.
 - `npm run verify`: tests plus architecture, Markdown links/lifecycle, and Markdown formatting exited 0 locally.
 - Clean index export: `npm ci` installed 175 packages; `npm run verify` exited 0 without product credentials or ignored local files.
 - Independent local mutations: forbidden mobile→API import returned exit 1 with `boundary`; broken README link returned exit 1 with `missing-file`.
@@ -209,10 +211,16 @@ Implemented pinned verification tooling, source-boundary policy/resolution/AST c
 - Used the existing cloud task checkout on `set-up` and maintained equivalent local ledger/brief artifacts because the skill's script resources were unavailable. This avoids moving the pending plan; the cost is manual rather than automated skill bookkeeping.
 - Pinned TypeScript 6.0.3 after the unconstrained install selected TypeScript 7.0.2, which lacks `createSourceFile` and is outside dependency-cruiser's supported `<7` range. The cost is a future tooling upgrade when those APIs align.
 
+- Owner-approval authenticity remains a review judgment: the checker verifies evidence fields and this conversation records the actual request. Fabricated evidence can still pass shape validation.
+- Product authorization remains in later feature plans: passing import rules cannot establish user-data access correctness.
+- Repository protection remains external configuration: merges can remain unprotected until the owner enables repository settings.
+
 ## Deferred work
 
-The [MVP design](../../design/active/2026-10-14-lets-farty-mvp-design.md) retains the separate foundation app-shell, recording, identity/ranking, sharing, digestive-guidance, and release slices. Repository protection and deployment settings remain external configuration; this tooling slice does not enable them. No required local verification is being deferred; all independent-review findings have been addressed.
+The [MVP design](../../design/active/2026-10-14-lets-farty-mvp-design.md) retains the separate foundation app-shell, recording, identity/ranking, sharing, digestive-guidance, and release slices. Repository protection and deployment settings remain external configuration; this tooling slice does not enable them. No required verification is being deferred; all independent-review findings have been addressed.
 
 - 2026-10-16 Final review fix pass: all seven findings covered by regression tests that failed first, then passed. The suite now has 141 passing tests, including nested CJS type conditions. Added pinned parse5 8.0.1 for actual HTML anchor parsing. Formatting caught an extra blank line in the evidence section; corrected before final root verification.
 
 - 2026-10-16 Post-review clean evidence: final index export `/tmp/lets-farty-layering-final-ezc1hnrl`, `npm ci` (176 packages) and `npm run verify` exited 0 with 141/141 tests and all scans passing. `git diff --check` exited 0.
+
+- [Post-review implementation CI](https://github.com/JBSKWON/lets-farty/actions/runs/38952699030) passed at `13d2cab` with all 141 tests and scans. Independent review and its single verified fix pass are complete.

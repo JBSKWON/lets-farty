@@ -40,4 +40,4 @@ When a rule intentionally changes, record its rationale and approval scope in th
 
 GitHub Actions uses the same lockfile and root command. Record local commands/results separately from an actual remote Actions URL and conclusion. A configured workflow is not evidence of a successful remote run or enabled branch protection. Repository protections and deployment environments remain separate account configuration.
 
-Before handoff, run verification, review the final diff, and update affected docs. The [active layering plan](doc/exec/active/2026-10-16-lightweight-layering-plan.md) records clean-install checks, deliberate-violation evidence, and remaining work. Keep required missing checks visible instead of marking a plan completed.
+Before handoff, run verification, review the final diff, and update affected docs. The [completed layering plan](doc/exec/completed/2026-10-16-lightweight-layering-plan.md) records clean-install checks, deliberate-violation evidence, and remaining work. Keep required missing checks visible instead of marking a plan completed.

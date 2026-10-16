@@ -16,7 +16,7 @@ Let's Farty has design documents and verification tooling; no application code e
 
 - Product scope, private data, consent, and bootstrap: [MVP design](doc/design/active/2026-10-14-lets-farty-mvp-design.md).
 - Dependency boundaries and tooling scope: [approved layering design](doc/design/completed/2026-10-15-lightweight-layering-design.md).
-- Current layering progress and verification: [execution plan](doc/exec/active/2026-10-16-lightweight-layering-plan.md).
+- Layering implementation and verification: [execution plan](doc/exec/completed/2026-10-16-lightweight-layering-plan.md).
 - Setup, commands, boundary-change review, and fixture conventions: [CONTRIBUTING.md](CONTRIBUTING.md).
 - Human overview and cloud setup: [README.md](README.md).
 
