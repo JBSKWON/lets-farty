@@ -7,6 +7,18 @@ import ts from 'typescript';
 import { listFiles } from './files.mjs';
 const sourcePattern=/\.(?:[cm]?[jt]s|[jt]sx)$/;
 const defaultPairs=[['ARCHITECTURE.md','tools'],['CONTRIBUTING.md','tools'],['doc/SECURITY.md','apps'],['doc/RELIABILITY.md','services']];
+
+function sourceComments(source,body) {
+  const candidates=new Map(),literalSpans=[];
+  function collect(node) {
+    if(ts.isStringLiteralLike(node) || ts.isTemplateHead(node) || ts.isTemplateMiddle(node) || ts.isTemplateTail(node) || ts.isJsxText(node))literalSpans.push([node.getStart(source),node.end]);
+    for(const range of [...(ts.getLeadingCommentRanges(body,node.pos)??[]),...(ts.getTrailingCommentRanges(body,node.end)??[])])candidates.set(range.pos,range);
+    for(const child of node.getChildren(source))collect(child);
+  }
+  collect(source);
+  return [...candidates.values()].filter(range=>!literalSpans.some(([start,end])=>range.pos>=start && range.pos<end));
+}
+
 export async function scanEntropy(root,options={}) {
   const findings=[];
   const add=(category,location,message,fix)=>findings.push({category,severity:'info',location,message,fix});
@@ -14,21 +26,18 @@ export async function scanEntropy(root,options={}) {
   const selected=options.check;
   for(const file of files) {
     const body=await readFile(resolve(root,file),'utf8');
+    const source=ts.createSourceFile(file,body,ts.ScriptTarget.Latest,true);
     if(!selected || selected==='sizes') {
       const count=body.trimEnd().split('\n').length;
       if(count>300)add('file-size',file,`${count} lines exceeds the template's 300-line review threshold.`,'Consider splitting by responsibility; this is a review signal, not a failure.');
     }
     if(!selected || selected==='todos') {
-      const scanner=ts.createScanner(ts.ScriptTarget.Latest,false,ts.LanguageVariant.Standard,body);
-      for(let token=scanner.scan();token!==ts.SyntaxKind.EndOfFileToken;token=scanner.scan()) {
-        if([ts.SyntaxKind.SingleLineCommentTrivia,ts.SyntaxKind.MultiLineCommentTrivia].includes(token) && /\b(TODO|FIXME|HACK|XXX|TEMP)\b/i.test(scanner.getTokenText())) {
-          const line=body.slice(0,scanner.getTokenPos()).split('\n').length;
-          add('untracked-debt',`${file}:${line}`,'Debt marker in a source comment.','Resolve it or record it in doc/tech-debt-tracker.md.');
-        }
+      for(const range of sourceComments(source,body))if(/\b(TODO|FIXME|HACK|XXX|TEMP)\b/i.test(body.slice(range.pos,range.end))) {
+        const line=source.getLineAndCharacterOfPosition(range.pos).line+1;
+        add('untracked-debt',`${file}:${line}`,'Debt marker in a source comment.','Resolve it or record it in doc/tech-debt-tracker.md.');
       }
     }
     if(!selected || selected==='credentials') {
-      const source=ts.createSourceFile(file,body,ts.ScriptTarget.Latest,true);
       function visit(node) {
         if((ts.isVariableDeclaration(node) || ts.isPropertyAssignment(node)) && node.name && /^(?:password|token|secret|apiKey)$/i.test(node.name.getText(source).replace(/["']/g,'')) && node.initializer && ts.isStringLiteralLike(node.initializer) && node.initializer.text) {
           add('credentials',`${file}:${source.getLineAndCharacterOfPosition(node.getStart(source)).line+1}`,'Possible hardcoded credential; literal intentionally omitted.','Review manually; use injected configuration for real credentials. This heuristic is not secret scanning.');

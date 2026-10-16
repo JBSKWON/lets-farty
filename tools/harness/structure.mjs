@@ -15,15 +15,18 @@ export async function checkHarness(root) {
   for(const file of requiredFiles) {
     const path=resolve(root,file);
     if(!existsSync(path) || !statSync(path).isFile()){add(file,'harness-file','Missing required harness reference','Restore and populate this document using the template mapping.');continue;}
-    if(/\{\{[A-Z][A-Z0-9_]*\}\}/.test(await readFile(path,'utf8')))add(file,'template-placeholder','Unfilled template placeholder','Replace it with observed project facts or an explicit pending decision.');
+    const body=await readFile(path,'utf8');
+    if(!body.trim())add(file,'harness-content','Required harness reference is empty','Populate this entry point with current project guidance.');
+    if(/\{\{[A-Z][A-Z0-9_]*\}\}/.test(body))add(file,'template-placeholder','Unfilled template placeholder','Replace it with observed project facts or an explicit pending decision.');
   }
   const index=resolve(root,'doc/README.md');
   if(existsSync(index)) {
-    const indexed=new Set();
-    visit(parseMarkdown(await readFile(index,'utf8')),node=>{
-      if(node.type==='link' || node.type==='definition') {
-        if(!/^[a-z]+:/i.test(node.url))indexed.add(relative(root,resolve(root,'doc',decodeURIComponent(node.url.split('#')[0]))).replaceAll('\\','/'));
-      }
+    const indexed=new Set(),definitions=new Map();
+    const tree=parseMarkdown(await readFile(index,'utf8'));
+    visit(tree,node=>{if(node.type==='definition')definitions.set(node.identifier.toLowerCase(),node.url);});
+    visit(tree,node=>{
+      const url=node.type==='link'?node.url:node.type==='linkReference'?definitions.get(node.identifier.toLowerCase()):undefined;
+      if(url && !/^[a-z]+:/i.test(url))indexed.add(relative(root,resolve(root,'doc',decodeURIComponent(url.split('#')[0]))).replaceAll('\\','/'));
     });
     for(const file of await listFiles(root,['doc/design','doc/exec']))if(file.endsWith('.md') && !indexed.has(file))add(file,'harness-index','Lifecycle document is missing from the documentation index','Add a real link in doc/README.md and preserve its actual approval/completion state.');
   }

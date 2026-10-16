@@ -47,3 +47,9 @@ The baseline `npm run verify` passed 141 tests and all scans at `52dedf8`. New s
 - `python3 scripts/lint-docs.py`, `python3 scripts/lint-arch.py`, and `python3 scripts/scan-entropy.py --check staleness` exited 0.
 - `npm run scan:entropy` completed with zero current advisory findings. No product directories or machine-global editor settings were introduced.
 - `git diff --check` passed; the supplied templates were populated or mapped to existing rule owners rather than retained as initialization artifacts.
+
+### Review and final verification
+
+The independent review identified a staged type-change bypass and edge cases in comment scanning, index references, and empty entry points. Regression cases were observed failing, then fixed: type changes select checks, comment scanning respects template/JSX context, indexes require a rendered direct/reference link, and empty required documents fail. The complete suite now passes 160/160 tests with all scans. Source metadata intentionally accepts an existing source file or directory; regeneration commands remain a separate documented responsibility rather than something the header can prove.
+
+The installed pre-commit hook passed against the actual staged commit `4407e2f`. [Initial adaptation CI](https://github.com/JBSKWON/lets-farty/actions/runs/38969571931) passed with all 155 tests before the additional review regressions. The final fix commit reruns the same staged-snapshot hook and CI workflow.

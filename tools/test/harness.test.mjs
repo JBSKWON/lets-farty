@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { checkHarness, requiredFiles, requiredDirectories } from '../harness/structure.mjs';
 import { scanEntropy } from '../harness/entropy.mjs';
@@ -63,3 +63,22 @@ test('staleness uses git history rather than checkout timestamps',()=>withReposi
 test('missing product directories produce no fabricated app findings',()=>withRepository({},async root=>{
   assert.deepEqual(await scanEntropy(root),[]);
 }));
+
+test('unused reference definitions do not count as index links',()=>withRepository({},async root=>{
+  await harness(root);
+  const file='doc/design/active/2026-10-16-hidden.md';await writeFile(join(root,file),'# Hidden\n');
+  await writeFile(join(root,'doc/README.md'),'# Docs\n\n[hidden]: design/active/2026-10-16-hidden.md\n');
+  assert.ok((await checkHarness(root)).some(d=>d.rule==='harness-index'));
+  await writeFile(join(root,'doc/README.md'),'# Docs\n\n[Hidden][hidden]\n\n[hidden]: design/active/2026-10-16-hidden.md\n');
+  assert.deepEqual(await checkHarness(root),[]);
+}));
+test('empty required documents are not initialized entry points',()=>withRepository({},async root=>{
+  await harness(root);await writeFile(join(root,'AGENTS.md'),'   \n');
+  assert.ok((await checkHarness(root)).some(d=>d.rule==='harness-content' && d.file==='AGENTS.md'));
+}));
+test('debt comments after interpolated template literals remain visible',()=>withRepository({
+  'tools/template.mjs':'const value = `first ${1} second`;\n// TODO: actual debt\n',
+},async root=>assert.equal((await scanEntropy(root)).filter(f=>f.category==='untracked-debt').length,1)));
+test('JSX text and string examples do not become debt comments',()=>withRepository({
+  'apps/mobile/example.tsx':'const element = <View>// TODO example</View>;\n// TODO actual debt\n',
+},async root=>assert.equal((await scanEntropy(root)).filter(f=>f.category==='untracked-debt').length,1)));

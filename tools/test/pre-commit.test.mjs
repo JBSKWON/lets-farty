@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { writeFile } from 'node:fs/promises';
+import { writeFile, rm, symlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { runPreCommit } from '../harness/pre-commit.mjs';
 import { withRepository } from './fixtures.mjs';
 
 const checker=`const fs=require('node:fs');
-if(!fs.existsSync('README.md'))process.exit(1);
+if(!fs.existsSync('README.md') || fs.lstatSync('README.md').isSymbolicLink())process.exit(1);
 for(const name of fs.readdirSync('.').filter(n=>n.endsWith('.md'))){if(fs.readFileSync(name,'utf8').includes('BROKEN'))process.exit(1);}`;
 async function repository(run) {
   await withRepository({
@@ -35,5 +35,11 @@ test('staged deletions still trigger documentation checks',()=>repository(async(
 }));
 test('filenames containing spaces are checked intact',()=>repository(async(root,git)=>{
   await writeFile(join(root,'guide with spaces.md'),'BROKEN\n');git('add','guide with spaces.md');
+  assert.equal(await runPreCommit(root),1);
+}));
+
+test('staged file-type changes cannot bypass checks',()=>repository(async(root,git)=>{
+  await rm(join(root,'README.md'));await symlink('/etc/hosts',join(root,'README.md'));git('add','README.md');
+  assert.match(git('diff','--cached','--name-status').toString(),/^T\s+README.md/);
   assert.equal(await runPreCommit(root),1);
 }));

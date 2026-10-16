@@ -15,7 +15,7 @@ function checksFor(files) {
 export async function runPreCommit(root) {
   root=resolve(root);
   const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'});
-  const files=git('diff','--cached','--name-only','--no-renames','-z','--diff-filter=ACMD').split('\0').filter(Boolean);
+  const files=git('diff','--cached','--name-only','--no-renames','-z','--diff-filter=ACMDT').split('\0').filter(Boolean);
   const checks=checksFor(files);
   if(!checks.length)return 0;
   const snapshot=await mkdtemp(join(tmpdir(),'lets-farty-staged-'));
