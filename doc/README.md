@@ -10,9 +10,13 @@ doc/
 ├── design/
 │   ├── active/
 │   └── completed/
-└── exec/
-    ├── active/
-    └── completed/
+├── exec/
+│   ├── active/
+│   └── completed/
+├── generated/
+├── product-specs/
+├── references/
+└── living references (core beliefs, quality, debt, domain guidance)
 ```
 
 Keep the existing `design` and `exec` names. Each contains exactly two lifecycle folders. Empty folders use `.gitkeep` so Git preserves them; remove the placeholder when the first document arrives.
@@ -82,3 +86,22 @@ Reviewed on 2026-10-14. These are documented practices and examples, not a unive
 - [Anthropic: Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps) explores explicit deliverables and evaluation during incremental development. We adopt clear acceptance criteria and verification without requiring its experimental multi-agent architecture.
 
 The repository examples above support the execution-plan folder split. Extending the same split to designs, choosing these three status labels, and adding emoji are conventions chosen for Let's Farty. The cited Anthropic guidance does not prescribe this directory layout or emoji scheme.
+
+## Harness reference map
+
+| Reference | Responsibility |
+| --- | --- |
+| [Core beliefs](core-beliefs.md) | Repository knowledge, progressive disclosure, evidence, and product boundaries |
+| [Design guidance](DESIGN.md) | Links to the architecture and approved dependency-policy owners |
+| [Frontend](FRONTEND.md) | Explicitly pending application-stack/component/platform conventions |
+| [Planned work](PLANS.md) | Navigation to current lifecycle state and upcoming foundation work |
+| [Product sense](PRODUCT_SENSE.md) | Purpose, private-data boundaries, and unapproved success metrics |
+| [Deployment](DEPLOYMENT.md) | Current CI verification and pending product deployment/release procedures |
+| [Reliability](RELIABILITY.md) | Current check behavior, limits, and future monitoring scope |
+| [Security](SECURITY.md) | Product access boundaries, credentials, and the limits of advisory hints |
+| [Quality score](QUALITY_SCORE.md) | Subjective assessments linked to actual evidence |
+| [Technical debt](tech-debt-tracker.md) | Concrete maintenance liabilities, owners, and next actions |
+| [Product specifications](product-specs/index.md) | Index linking to the owning product design |
+| [Template adaptation](references/harness-template.md) | Supplied archive provenance, file mapping, and verification |
+
+Living references do not enter design/plan lifecycle folders. `npm run check:harness` requires these entry points, checks that every lifecycle document has a real index link, and validates generated-source headers. `doc/generated/` contains derived documents only when an actual producer exists; never hand-maintain that output. Dependency/background references belong in `doc/references/`.

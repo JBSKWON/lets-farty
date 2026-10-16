@@ -10,7 +10,7 @@ Let's Farty has design documents and verification tooling; no application code e
 
 1. Inspect `git status --short`, `git diff`, and relevant history. Preserve existing work.
 2. Read the [documentation lifecycle](doc/README.md), relevant design/plan, and [current architecture](ARCHITECTURE.md).
-3. Distinguish proposals, recorded approvals, and implemented behavior in changes and handoffs.
+3. Read [quality scores](doc/QUALITY_SCORE.md) and the [debt tracker](doc/tech-debt-tracker.md); distinguish proposals, recorded approvals, and implemented behavior.
 
 ## Task map
 
@@ -20,9 +20,24 @@ Let's Farty has design documents and verification tooling; no application code e
 - Setup, commands, boundary-change review, and fixture conventions: [CONTRIBUTING.md](CONTRIBUTING.md).
 - Human overview and cloud setup: [README.md](README.md).
 
+## Repository layout
+
+```text
+AGENTS.md / ARCHITECTURE.md  Entry points and current component map
+doc/                        Lifecycle index, designs, plans, and harness references
+tools/                      Verification, parser-based checks, and fixture tests
+scripts/                    Template-compatible Python command entry points
+.cursor/rules/              Project-local guidance linked to shared rule owners
+.githooks/                  Staged-snapshot pre-commit entry point
+```
+
+## Harness references
+
+[Core beliefs](doc/core-beliefs.md), [design guidance](doc/DESIGN.md), [product sense](doc/PRODUCT_SENSE.md), [frontend](doc/FRONTEND.md), [deployment](doc/DEPLOYMENT.md), [reliability](doc/RELIABILITY.md), and [security](doc/SECURITY.md) describe the current scope and explicitly pending product decisions. The [adaptation record](doc/references/harness-template.md) maps the supplied template to this project.
+
 ## Verification
 
-Use Node 24.19.0 and npm 11.9.0. Run `npm ci` for locked dependencies, then `npm run verify` for fixture tests, architecture boundaries, Markdown links/lifecycle, and formatting. Run `git diff --check` before handoff. Individual commands are documented in CONTRIBUTING.md. No application build, server, or native-launch commands exist yet.
+Use Node 24.19.0 and npm 11.9.0. Run `npm ci` for locked dependencies, then `npm run verify` for fixture tests, architecture boundaries, Markdown links/lifecycle, harness structure, and formatting. Run `git diff --check` before handoff. Individual commands are documented in CONTRIBUTING.md. No application build, server, or native-launch commands exist yet.
 
 Report checks actually run, including failures or unavailable checks. A configured workflow does not prove a remote run or repository protection. Keep commands/results and remaining work in the active execution plan.
 
@@ -35,3 +50,7 @@ Report checks actually run, including failures or unavailable checks. A configur
 - Add nested instructions only for real subprojects needing distinct guidance; inherit common rules.
 
 The MVP design owns detailed product boundaries: ranked scores are server-calculated; ranking and audio sharing have separate consent; health entries stay private; the fun score is not a health assessment.
+
+## Doc gardening and quality
+
+After significant work, review quality grades against actual evidence and record concrete debt with a next action. Generated documents need an existing Source reference and must be regenerated through their producer. Keep doc/README.md's index current when adding or moving designs/plans. `npm run scan:entropy` provides advisory drift/debt hints; it is not a quality or security certification. The local pre-commit hook setup and template-compatible commands are documented in CONTRIBUTING.md.

@@ -1,0 +1,7 @@
+---
+description: Review affected documentation when source changes
+globs: "tools/**,scripts/**,apps/**,services/**,packages/**"
+alwaysApply: false
+---
+
+When source changes, review ARCHITECTURE.md for components/public interfaces, CONTRIBUTING.md for commands, doc/DEPLOYMENT.md for release steps, and doc/QUALITY_SCORE.md for evidence. Add material new design decisions through doc/README.md's lifecycle. Derived documentation must reference its real producer. Run npm run verify before handoff.

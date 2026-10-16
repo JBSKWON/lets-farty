@@ -1,0 +1,7 @@
+---
+description: Review subjective quality grades against evidence
+globs:
+alwaysApply: true
+---
+
+After significant changes, review doc/QUALITY_SCORE.md and doc/tech-debt-tracker.md. Link grades to observed verification and document limitations; never infer product readiness from tooling checks. Resolve debt or record an owner and next action. Proposed features belong in the roadmap.

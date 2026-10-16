@@ -2,3 +2,11 @@ node_modules/
 coverage/
 .superpowers/
 *.log
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+Thumbs.db
+scripts/screenshots/current/
+scripts/screenshots/diffs/
+_deploy/secrets.env

@@ -1,0 +1,7 @@
+---
+description: Keep the project-specific documentation layout
+globs:
+alwaysApply: true
+---
+
+Use doc/README.md as the documentation and lifecycle index. Designs use doc/design/{active,completed}; execution plans use doc/exec/{active,completed}. Living references, core beliefs, quality scores, and technical debt stay outside those lifecycle folders. Product references, dependency references, and derived documentation use doc/product-specs/, doc/references/, and doc/generated/ respectively. Do not introduce a competing docs/ tree.

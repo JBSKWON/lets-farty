@@ -19,11 +19,13 @@ No application setup or launch commands exist yet. Expo/React Native and Supabas
 
 | Command | Checks |
 | --- | --- |
-| `npm run verify` | Exact Node/npm pins, fixture tests, architecture, documentation, Markdown formatting |
+| `npm run verify` | Exact Node/npm pins, fixture tests, architecture, documentation, harness structure, Markdown formatting |
 | `npm test` | Runner behavior, graph/resolver/AST fixtures, documentation fixtures, and CLI exit codes |
 | `npm run check:architecture` | Existing project source and tests under `apps/`, `services/`, `packages/` |
 | `npm run check:docs` | Local Markdown links/anchors and document metadata/status/location |
 | `npm run check:format` | Markdown style, including references and design/plan files |
+| `npm run check:harness` | Required template references, lifecycle index links, generated-source headers, and filled entry points |
+| `npm run scan:entropy` | Advisory debt comments, file sizes, redacted credential hints, and Git-history staleness |
 | `git diff --check` | Diff whitespace errors |
 
 Checks return nonzero when they fail. Architecture and docs CLIs also accept `--root PATH` for disposable repositories. A source-free architecture scan is valid; it does not replace fixture tests proving that forbidden edges fail.
@@ -41,3 +43,25 @@ When a rule intentionally changes, record its rationale and approval scope in th
 GitHub Actions uses the same lockfile and root command. Record local commands/results separately from an actual remote Actions URL and conclusion. A configured workflow is not evidence of a successful remote run or enabled branch protection. Repository protections and deployment environments remain separate account configuration.
 
 Before handoff, run verification, review the final diff, and update affected docs. The [completed layering plan](doc/exec/completed/2026-10-16-lightweight-layering-plan.md) records clean-install checks, deliberate-violation evidence, and remaining work. Keep required missing checks visible instead of marking a plan completed.
+
+## Local hooks and template entry points
+
+After installing dependencies, enable the project hook in this checkout:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+Review any existing `core.hooksPath` before replacing it. New clones must enable hooks locally; CI runs the full root command independently. The hook checks staged content, including deletions/renames and filenames with spaces, so partial staging does not accidentally validate unstaged fixes. A tooling change runs tests and scans; documentation changes run docs, harness structure, and formatting; product source changes run architecture checks. The hook uses the installed dependencies; run `npm ci` after lockfile changes.
+
+The supplied template's commands are available using Python 3, without uv or Python dependencies:
+
+```sh
+python3 scripts/lint-docs.py
+python3 scripts/lint-arch.py
+python3 scripts/scan-entropy.py
+```
+
+These delegate to the npm checks. Entropy also supports `--check todos`, `--check staleness`, `--check sizes`, and `--check credentials`. Findings are advisory and never print credential literals. For actual secret detection or product access-policy assurance, use the separate controls required by the feature/release scope.
+
+Use [core beliefs](doc/core-beliefs.md), [quality scores](doc/QUALITY_SCORE.md), and the [debt tracker](doc/tech-debt-tracker.md) during maintenance. Generated docs require a title plus **Source:** with a repository-relative producer path near the top. Keep the [documentation index](doc/README.md) linked to every design and plan. The [adaptation record](doc/references/harness-template.md) explains deviations from the generic template.

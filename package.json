@@ -11,7 +11,9 @@
     "verify": "node tools/verify.mjs",
     "check:docs": "node tools/docs/check.mjs",
     "check:format": "markdownlint-cli2",
-    "check:architecture": "node tools/architecture/check.mjs"
+    "check:architecture": "node tools/architecture/check.mjs",
+    "check:harness": "node tools/harness/structure.mjs",
+    "scan:entropy": "node tools/harness/entropy.mjs"
   },
   "devDependencies": {
     "dependency-cruiser": "18.6.0",

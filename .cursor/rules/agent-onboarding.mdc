@@ -1,0 +1,7 @@
+---
+description: Read the shared repository entry points before work
+globs:
+alwaysApply: true
+---
+
+Read AGENTS.md, ARCHITECTURE.md, and doc/QUALITY_SCORE.md before changing this repository. Use doc/README.md for lifecycle and approval rules. Follow the relevant design/plan and preserve existing work.

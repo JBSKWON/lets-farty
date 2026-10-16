@@ -1,0 +1,7 @@
+---
+description: Maintain documentation alongside changes
+globs:
+alwaysApply: true
+---
+
+Update affected documentation in the same change. doc/README.md owns statuses, approvals, indexes, and moves. doc/generated/ is derived from the Source field in each generated document; change its producer rather than hand-editing output. Run npm run check:docs and npm run check:harness.

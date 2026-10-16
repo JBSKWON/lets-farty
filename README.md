@@ -16,3 +16,7 @@ Use Node 24.19.0 and npm 11.9.0, then run `npm ci` and `npm run verify`. See [CO
 4. Start a new task using the published environment.
 
 The cloud environment can install tooling with `npm ci` and run `npm run verify` using the pinned runtime. Application dependencies, services, and native launch commands will arrive with the separate foundation app shell. See the [official OpenAI Docs for cloud environments](https://learn.chatgpt.com/docs/environments/cloud-environments).
+
+## Repository harness
+
+The [documentation index](doc/README.md) links designs/plans and the adapted harness references. Start with [core beliefs](doc/core-beliefs.md), [quality scores](doc/QUALITY_SCORE.md), and [CONTRIBUTING.md](CONTRIBUTING.md) for checks and local hook setup. [Template provenance and verification](doc/references/harness-template.md) records how the supplied harness template was applied to this branch.
