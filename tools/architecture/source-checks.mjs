@@ -17,7 +17,9 @@ export function checkSource(root,files) {
         const loader=call.kind===ts.SyntaxKind.ImportKeyword || (ts.isIdentifier(call) && call.text==='require');
         if(loader && (node.arguments.length!==1 || !ts.isStringLiteralLike(node.arguments[0]))) add(node,'computed-loader','Module target must be a literal','Use a statically resolvable import.');
       }
+      if(ts.isElementAccessExpression(node) && ts.isStringLiteralLike(node.argumentExpression) && node.argumentExpression.text==='require') add(node,'computed-loader','Element-access require is forbidden','Use a statically resolvable literal import.');
       if(ts.isIdentifier(node)) {
+        if(node.text==='module') add(node,'computed-loader','Module loader indirection is forbidden','Use a statically resolvable literal import.');
         if(node.text==='require' && !(ts.isCallExpression(node.parent) && node.parent.expression===node)) add(node,'computed-loader','Require indirection is forbidden','Use a literal import or require call.');
         if(['createRequire','eval','Function'].includes(node.text)) add(node,'computed-loader','Dynamic code/loading is forbidden','Use statically resolvable imports.');
         const propertyName=(ts.isPropertyAccessExpression(node.parent) && node.parent.name===node) || (ts.isPropertyAssignment(node.parent) && node.parent.name===node);

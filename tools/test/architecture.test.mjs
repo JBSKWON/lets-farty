@@ -141,3 +141,57 @@ test('a nested fixture root cannot hide entry-file dependencies',async()=>{
     assert.ok(ds.some(d=>d.rule==='boundary'),JSON.stringify(ds));
   });
 });
+for(const kind of ['require','type'])test(`conditional exports obey ${kind} conditions`,async()=>{
+  const name=kind==='require'?'apps/mobile/index.cjs':'apps/mobile/index.ts';
+  await withRepository({
+    'package.json':JSON.stringify({name:'fixture',type:'module',exports:{'./target':kind==='require'?{import:'./packages/contracts/index.cjs',require:'./services/api/src/modules/scoring/index.cjs'}:{types:'./services/api/src/modules/scoring/index.d.ts',default:'./packages/contracts/index.cjs'}}}),
+    [name]:kind==='require'?"require('fixture/target');":"import type {Value} from 'fixture/target'; export type Copy=Value;",
+    'packages/contracts/index.cjs':'exports.value=1;',
+    'services/api/src/modules/scoring/index.cjs':'exports.value=1;',
+    'services/api/src/modules/scoring/index.d.ts':'export type Value=string;',
+  },async root=>assert.ok((await checkArchitecture(root)).some(d=>d.rule==='boundary')));
+});
+test('one consumer can mix import and require for the same conditional export',async()=>{
+  await withRepository({
+    'package.json':JSON.stringify({name:'fixture',type:'module',exports:{'./target':{import:'./packages/contracts/index.cjs',require:'./services/api/src/modules/scoring/index.cjs'}}}),
+    [paths.mobile]:"import 'fixture/target'; require('fixture/target');",
+    'packages/contracts/index.cjs':'exports.value=1;',
+    'services/api/src/modules/scoring/index.cjs':'exports.value=1;',
+  },async root=>{
+    const graph=await readGraph(root);
+    assert.ok(graph.edges.some(e=>e.to==='packages/contracts/index.cjs'));
+    assert.ok(graph.edges.some(e=>e.to==='services/api/src/modules/scoring/index.cjs'));
+    assert.ok((await checkArchitecture(root)).some(d=>d.rule==='boundary'));
+  });
+});
+for(const code of ["module['require']('node:fs')","const load=module['require'].bind(module); load('node:fs');","const m=module; m['require']('node:fs');"])test(`element loader fails: ${code}`,()=>expectRule({'packages/scoring/index.cjs':code},'computed-loader'));
+test('transport cannot construct an external SDK implementation',()=>expectRule({
+  [paths.transport]:"import {value} from '@supabase/supabase-js'; console.log(value);",
+  'node_modules/@supabase/supabase-js/package.json':'{"name":"@supabase/supabase-js","main":"index.js"}',
+  'node_modules/@supabase/supabase-js/index.js':'exports.value=1;',
+},'transport-implementation'));
+test('transport may import a reviewed HTTP framework',async()=>{
+  await withRepository({[paths.transport]:"import {value} from 'hono'; console.log(value);",'node_modules/hono/package.json':'{"name":"hono","main":"index.js"}','node_modules/hono/index.js':'exports.value=1;'},async root=>assert.deepEqual(await checkArchitecture(root),[]));
+});
+test('runtime cannot consume a nested private transport index',()=>expectRule(edge(paths.runtime,'services/api/src/modules/scoring/transport/private/index.ts'),'module-private'));
+test('mixed type and value imports preserve both conditional targets',async()=>{
+  await withRepository({
+    'package.json':JSON.stringify({name:'fixture',type:'module',exports:{'./target':{types:'./services/api/src/modules/scoring/index.d.ts',import:'./packages/contracts/index.js'}}}),
+    [paths.mobile]:"import type {Value} from 'fixture/target'; import {value} from 'fixture/target'; console.log(value); export type Copy=Value;",
+    'packages/contracts/index.js':'export const value=1;',
+    'services/api/src/modules/scoring/index.d.ts':'export type Value=string;',
+  },async root=>{
+    const graph=await readGraph(root);
+    assert.ok(graph.edges.some(e=>e.to==='packages/contracts/index.js' && !e.typeOnly));
+    assert.ok(graph.edges.some(e=>e.to==='services/api/src/modules/scoring/index.d.ts' && e.typeOnly));
+    assert.ok((await checkArchitecture(root)).some(d=>d.rule==='boundary'));
+  });
+});
+test('CJS type imports use the require branch of nested types exports',async()=>{
+  await withRepository({
+    'package.json':JSON.stringify({name:'fixture',type:'commonjs',exports:{'./target':{types:{import:'./packages/contracts/index.d.ts',require:'./services/api/src/modules/scoring/index.d.ts'}}}}),
+    'apps/mobile/index.cts':"import type {Value} from 'fixture/target'; export type Copy=Value;",
+    'packages/contracts/index.d.ts':'export type Value=string;',
+    'services/api/src/modules/scoring/index.d.ts':'export type Value=string;',
+  },async root=>assert.ok((await checkArchitecture(root)).some(d=>d.rule==='boundary')));
+});

@@ -1,5 +1,8 @@
 const normalize = path => path.replaceAll('\\', '/');
 const entry = /\/index\.(?:[cm]?[jt]s|[jt]sx)$/;
+const transportEntry = /^services\/api\/src\/modules\/[^/]+\/transport\/index\.(?:[cm]?[jt]s|[jt]sx)$/;
+const httpFrameworks = new Set(['hono','@hono/node-server','express','fastify']);
+const packageName = name => name.startsWith('@') ? name.split('/').slice(0,2).join('/') : name.split('/')[0];
 export function classify(path) {
   path = normalize(path);
   const shared = /^(packages\/(contracts|scoring)|apps\/(mobile|share))\//.exec(path);
@@ -28,6 +31,7 @@ export function checkGraph(graph) {
     if(edge.unresolved) add(from,'unresolved',`Cannot resolve ${edge.specifier}`,'Fix the path, package manifest, or consumer tsconfig.');
     if(edge.external) {
       const rule = source.area==='scoring' ? 'portable-runtime' : source.area==='business' ? 'business-implementation' : source.area==='contracts' && !/^zod(?:\/|$)/.test(edge.specifier) ? 'contracts-external' : undefined;
+      if(source.area==='transport' && !httpFrameworks.has(packageName(edge.specifier))) add(from,'transport-implementation',`Transport cannot import ${edge.specifier}`,'Inject domain operations; concrete SDKs belong in adapters. Review HTTP framework exceptions in policy.mjs.');
       if(rule) add(from,rule,`External runtime dependency ${edge.specifier} is forbidden here`,'Inject a provider, use a shared type, or review a narrowly scoped allowlist change.');
       continue;
     }
@@ -36,7 +40,7 @@ export function checkGraph(graph) {
     if(!allowed[source.area]?.includes(dest.area)) add(from,'boundary',`${source.area} cannot depend on ${dest.area}: ${to}`,'Use contracts, an injected provider, or runtime composition.');
     if(source.domain && dest.domain && source.domain !== dest.domain) add(from,'cross-domain',`Domain ${source.domain} imports ${dest.domain}`,'Pass the other domain operation through runtime composition.');
     if(dest.area==='business' && (!source.domain || source.area==='transport') && !dest.public) add(from,'module-private',`Private module file imported: ${to}`,'Import the module index entry instead.');
-    if(dest.area==='transport' && source.area==='runtime' && !entry.test(to)) add(from,'module-private',`Private transport file imported: ${to}`,'Import transport/index instead.');
+    if(dest.area==='transport' && source.area==='runtime' && !transportEntry.test(to)) add(from,'module-private',`Private transport file imported: ${to}`,'Import transport/index instead.');
     if(source.area==='scoring' && dest.area==='contracts' && !edge.typeOnly) add(from,'scoring-contract-types','Portable scoring consumes contracts only as shared types','Use import type for the shared schema-derived type.');
     if(source.area==='adapter' && dest.area==='business' && !edge.typeOnly) add(from,'adapter-provider-types',`Adapter imports business implementation: ${to}`,'Use import type through the module index for provider interfaces.');
   }

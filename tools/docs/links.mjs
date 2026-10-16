@@ -1,7 +1,8 @@
 import { existsSync, realpathSync } from 'node:fs';
 import { resolve, dirname, relative, sep } from 'node:path';
 import GithubSlugger from 'github-slugger';
-import { parseMarkdown, text, visit } from './markdown.mjs';
+import { parseFragment } from 'parse5';
+import { parseMarkdown, headingText, visit } from './markdown.mjs';
 
 export function checkLinks(root,documents) {
   root=realpathSync(root);
@@ -11,8 +12,14 @@ export function checkLinks(root,documents) {
     const tree=parseMarkdown(source);trees.set(file,tree);
     const slugger=new GithubSlugger(), ids=new Set();
     visit(tree,node=>{
-      if(node.type==='heading')ids.add(slugger.slug(text(node)));
-      if(node.type==='html') for(const match of node.value.matchAll(/<a\b[^>]*\b(?:id|name)\s*=\s*["']([^"']+)["'][^>]*>/gi))ids.add(match[1]);
+      if(node.type==='heading')ids.add(slugger.slug(headingText(node)));
+      if(node.type==='html') {
+        function collect(element) {
+          for(const attr of element.attrs??[]) if(attr.name==='id' || (element.tagName==='a' && attr.name==='name'))ids.add(attr.value);
+          for(const child of element.childNodes??[])collect(child);
+        }
+        collect(parseFragment(node.value));
+      }
     });
     anchors.set(file,ids);
   }
@@ -37,7 +44,10 @@ export function checkLinks(root,documents) {
         if(url===undefined)add(file,'undefined-reference',`Undefined reference: ${node.identifier}`);else check(url);
       }
       // CommonMark leaves explicit undefined references as text, not linkReference nodes.
-      if(node.type==='text')for(const match of node.value.matchAll(/!?\[([^\]\n]+)\]\[([^\]\n]*)\]/g)) {
+      if(node.type==='text')for(const match of documents.get(file).slice(node.position.start.offset,node.position.end.offset).matchAll(/!?\[([^\]\n]+)\]\[([^\]\n]*)\]/g)) {
+        const raw=documents.get(file).slice(node.position.start.offset,node.position.end.offset);
+        let escapes=0;for(let i=match.index-1;i>=0 && raw[i]==='\\';i--)escapes++;
+        if(escapes%2)continue;
         const key=(match[2]||match[1]).replace(/\s+/g,' ').toLowerCase();
         if(!definitions.has(key))add(file,'undefined-reference',`Undefined reference: ${key}`);
       }

@@ -43,18 +43,27 @@ export async function readGraph(root) {
       if(errors.length) throw new Error(`Invalid tsconfig: ${ts.flattenDiagnosticMessageText(errors[0].messageText,' ')}`);
       tsConfig=parsed;
     }
-    const result=await cruise(inputs.map(f=>resolve(root,f)),{
-      baseDir:process.cwd(), outputType:'json', tsPreCompilationDeps:true,
-      doNotFollow:{path:'node_modules'}, ...(config?{tsConfig:{fileName:config}}:{}),
-    },{bustTheCache:true,exportsFields:['exports'],conditionNames:['import','require','node','default'],extensions:['.ts','.tsx','.mts','.cts','.js','.jsx','.mjs','.cjs','.json']},{tsConfig});
-    const data=typeof result.output==='string'?JSON.parse(result.output):result.output;
-    const inputSet=new Set(inputs);
-    for(const module of data.modules) {
-      const from=inputs.find(file=>resolve(root,file)===resolve(process.cwd(),module.source)) ?? canonical(module.source);
-      if(!inputSet.has(from)) continue;
-      for(const d of module.dependencies) {
-        const external=d.coreModule || d.dependencyTypes.includes('core') || /(?:^|\/)node_modules\//.test(d.resolved);
-        edges.push({from,to:external?undefined:canonical(d.resolved),specifier:d.module,external,unresolved:!!d.couldNotResolve,typeOnly:!!d.typeOnly || d.dependencyTypes.includes('type-only')});
+    // A file can use one specifier with several module systems. Resolve each
+    // condition independently, then retain only the matching kind of edge.
+    for(const mode of ['import','require','types-import','types-require']) {
+      const conditionNames=mode.startsWith('types-')?['types',mode.slice(6),'node','default']:[mode,'node','default'];
+      const result=await cruise(inputs.map(f=>resolve(root,f)),{
+        baseDir:process.cwd(), outputType:'json', tsPreCompilationDeps:true,
+        doNotFollow:{path:'node_modules'}, ...(config?{tsConfig:{fileName:config}}:{}),
+      },{bustTheCache:true,exportsFields:['exports'],conditionNames,extensions:['.ts','.tsx','.mts','.cts','.js','.jsx','.mjs','.cjs','.json']},{tsConfig});
+      const data=typeof result.output==='string'?JSON.parse(result.output):result.output;
+      const inputSet=new Set(inputs);
+      for(const module of data.modules) {
+        const from=inputs.find(file=>resolve(root,file)===resolve(process.cwd(),module.source)) ?? canonical(module.source);
+        if(!inputSet.has(from)) continue;
+        for(const d of module.dependencies) {
+          const typeOnly=!!d.typeOnly || d.dependencyTypes.includes('type-only');
+          const format=ts.getImpliedNodeFormatForFile(resolve(root,from),undefined,ts.sys,tsConfig?.options??{module:ts.ModuleKind.NodeNext,moduleResolution:ts.ModuleResolutionKind.NodeNext});
+          const kind=typeOnly?`types-${format===ts.ModuleKind.CommonJS?'require':'import'}`:d.moduleSystem==='cjs'?'require':'import';
+          if(kind!==mode)continue;
+          const external=d.coreModule || d.dependencyTypes.includes('core') || /(?:^|\/)node_modules\//.test(d.resolved);
+          edges.push({from,to:external?undefined:canonical(d.resolved),specifier:d.module,external,unresolved:!!d.couldNotResolve,typeOnly});
+        }
       }
     }
   }

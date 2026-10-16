@@ -48,3 +48,15 @@ test('docs CLI exposes violation and success exit codes',async()=>{
   });
   await withRepository({'README.md':'# Start'},async root=>assert.equal(spawnSync(process.execPath,[cli,'--root',root]).status,0));
 });
+test('inline code contributes to GitHub heading anchors',async()=>assert.deepEqual(await diagnostics({
+  'README.md':'# Start\n\n[guide](guide.md#install-npm-ci)', 'guide.md':'# Install `npm ci`',
+}),[]));
+test('escaped reference examples are ordinary text',async()=>assert.deepEqual(await diagnostics({
+  'README.md':'# Start\n\n\\[example\\]\\[missing\\]',
+}),[]));
+test('commented HTML cannot create a phantom anchor',()=>hasRule({
+  'README.md':'# Start\n\n[guide](guide.md#phantom)', 'guide.md':'# Guide\n\n<!-- <a id="phantom"></a> -->',
+},'missing-anchor'));
+test('script text cannot create a phantom anchor',()=>hasRule({
+  'README.md':'# Start\n\n[guide](guide.md#phantom)', 'guide.md':'# Guide\n\n<script>const text = \'<a id="phantom"></a>\';</script>',
+},'missing-anchor'));

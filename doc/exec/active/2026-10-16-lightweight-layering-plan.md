@@ -157,7 +157,7 @@ Exercise all three statuses from `doc/README.md`, with and without emoji. Active
 - [x] **Step 1: Wire scripts and CI.** Use `ubuntu-latest`, a 10-minute timeout, `push` and `pull_request` triggers, and `permissions: contents: read`. Pin checkout and setup-node actions to reviewed immutable release SHAs, read Node from `.node-version`, cache npm by the lockfile, and install exact npm 11.9.0 before `npm ci` and `npm run verify`. Record chosen action releases/SHAs here. Do not use `continue-on-error` or event-dependent bypass. Install needs registry access; verification needs no product network/services or secrets. Repository protection remains separate.
 - [x] **Step 2: Update guidance.** `ARCHITECTURE.md` maps existing tooling, the boundary policy/checker paths, and clearly labeled future product examples, linking to the design for rationale. `CONTRIBUTING.md` documents pinned setup, `npm ci`, all scripts, fixture failures, and reviewing rule changes. `AGENTS.md` links these owners and replaces unavailable-command statements with tested commands; retain the one-line Claude import. README distinguishes tooling setup from future application setup. Update `doc/README.md` to report only the enforcement that now exists and link to it, rather than retaining its blanket “not implemented” statement. Update both design state descriptions without silently approving pending product choices.
 - [x] **Step 3: Verify locally and from a clean temporary checkout.** Run `npm run verify` and `git diff --check`; record exit codes and test totals. Stage the intended changes, export the index with `git checkout-index --all --prefix=/tmp/lets-farty-layering-clean/` into a newly created empty directory, then run `npm ci` and `npm run verify` there with the pinned runtime. This must work without ignored local files or product credentials. In that disposable copy, independently add the mobile → API fixture and a broken Markdown link; run `npm run verify` after each mutation and require exit 1 with the expected diagnostic, restoring the copy between cases. Record unavailable registry/network access as a failed required clean-install check rather than substituting a warm cache claim.
-- [ ] **Step 4: Commit and observe CI when publishing is authorized.** Commit the workflow, guidance, final runner, and progress as `ci: verify layering and documentation consistently`. Record the actual remote Actions run URL/conclusion separately from local evidence. In a disposable branch, introduce one forbidden import and then one broken local link; each must produce a failing `verify` check in Actions. Keep those commits out of the implementation branch. If publication or Actions access is unavailable, leave remote evidence pending and the plan active.
+- [x] **Step 4: Commit and observe CI when publishing is authorized.** Commit the workflow, guidance, final runner, and progress as `ci: verify layering and documentation consistently`. Record the actual remote Actions run URL/conclusion separately from local evidence. In a disposable branch, introduce one forbidden import and then one broken local link; each must produce a failing `verify` check in Actions. Keep those commits out of the implementation branch. If publication or Actions access is unavailable, leave remote evidence pending and the plan active.
 
 ## Acceptance and completion record
 
@@ -188,3 +188,31 @@ Before implementation, record owner approval of the layering scope and tooling c
 - 2026-10-16 Task 4: wired the same root command into local scripts and GitHub Actions. Verified action v4 tag SHAs through GitHub: checkout `11d5960a326750d5838078e36cf38b85af677262`, setup-node `49933ea5288caeca8642d1e84afbd3f7d6820020`. Contributor/architecture/agent guidance now describes runnable tooling separately from the app shell. Clean-install and remote observations follow below.
 
 - 2026-10-16 Task 4 local evidence: `npm run verify` passed 126 tests plus all three scans. A fresh index export in `/tmp/lets-farty-layering-clean-yr6d0fyc` installed with `npm ci` (175 packages) and passed the same command. Independent deliberate violations in that copy returned exit 1: mobile→API import reported `boundary`; README broken link reported `missing-file`. Both mutations were removed after testing. `git diff --check` exited 0. Remote CI remains pending publication.
+
+## Outcomes
+
+Implemented pinned verification tooling, source-boundary policy/resolution/AST checks, Markdown link/lifecycle/style checks, a shared local/CI command, and current contributor/agent/architecture guidance. No product directories were created. The implementation is committed on origin's `set-up` branch. Independent branch review completed; all seven findings were reproduced and fixed, with 141 tests passing.
+
+## Verification evidence
+
+- `npm test`: 126/126 passing before independent review.
+- `npm run verify`: tests plus architecture, Markdown links/lifecycle, and Markdown formatting exited 0 locally.
+- Clean index export: `npm ci` installed 175 packages; `npm run verify` exited 0 without product credentials or ignored local files.
+- Independent local mutations: forbidden mobile→API import returned exit 1 with `boundary`; broken README link returned exit 1 with `missing-file`.
+- [Implementation CI run](https://github.com/JBSKWON/lets-farty/actions/runs/38951745572): success at `f8975b1`.
+- [Forbidden-import CI run](https://github.com/JBSKWON/lets-farty/actions/runs/38951794333): expected failure in Verify with `boundary`; setup/install succeeded.
+- [Broken-link CI run](https://github.com/JBSKWON/lets-farty/actions/runs/38951793975): expected failure in Verify with `missing-file`; setup/install succeeded.
+- Both deliberate-violation branches were deleted after recording their job diagnostics. Their commits are not part of `set-up`.
+
+## Execution decisions
+
+- Used the existing cloud task checkout on `set-up` and maintained equivalent local ledger/brief artifacts because the skill's script resources were unavailable. This avoids moving the pending plan; the cost is manual rather than automated skill bookkeeping.
+- Pinned TypeScript 6.0.3 after the unconstrained install selected TypeScript 7.0.2, which lacks `createSourceFile` and is outside dependency-cruiser's supported `<7` range. The cost is a future tooling upgrade when those APIs align.
+
+## Deferred work
+
+The [MVP design](../../design/active/2026-10-14-lets-farty-mvp-design.md) retains the separate foundation app-shell, recording, identity/ranking, sharing, digestive-guidance, and release slices. Repository protection and deployment settings remain external configuration; this tooling slice does not enable them. No required local verification is being deferred; all independent-review findings have been addressed.
+
+- 2026-10-16 Final review fix pass: all seven findings covered by regression tests that failed first, then passed. The suite now has 141 passing tests, including nested CJS type conditions. Added pinned parse5 8.0.1 for actual HTML anchor parsing. Formatting caught an extra blank line in the evidence section; corrected before final root verification.
+
+- 2026-10-16 Post-review clean evidence: final index export `/tmp/lets-farty-layering-final-ezc1hnrl`, `npm ci` (176 packages) and `npm run verify` exited 0 with 141/141 tests and all scans passing. `git diff --check` exited 0.
