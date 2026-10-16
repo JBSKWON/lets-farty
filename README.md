@@ -2,6 +2,8 @@
 
 The project is in design. The [MVP design](doc/design/active/2026-10-14-lets-farty-mvp-design.md) describes the proposed app and repository bootstrap. [Documentation rules](doc/README.md) track design and execution progress.
 
+Coding agents start with [AGENTS.md](AGENTS.md), which follows the [open AGENTS.md convention](https://github.com/agentsmd/agents.md). Claude Code imports the same instructions through [CLAUDE.md](CLAUDE.md).
+
 ## Work in Codex Cloud
 
 1. In Codex, choose **Work in > Cloud > Select environment > Create environment**.

@@ -1,6 +1,6 @@
 # Documentation workflow
 
-This file owns the lifecycle rules for design documents and execution plans. Update affected Markdown alongside the change it describes, including progress, decisions, blockers, and verification evidence. Root agent and contribution instructions should link here when they are introduced.
+This file owns the lifecycle rules for design documents and execution plans. Update affected Markdown alongside the change it describes, including progress, decisions, blockers, and verification evidence. [Root agent instructions](../AGENTS.md) link here; the contribution guide should also link here when introduced.
 
 ## Layout and current work
 
@@ -18,8 +18,11 @@ doc/
 Keep the existing `design` and `exec` names. Each contains exactly two lifecycle folders. Empty folders use `.gitkeep` so Git preserves them; remove the placeholder when the first document arrives.
 
 - Active design: [Let's Farty MVP](design/active/2026-10-14-lets-farty-mvp-design.md), awaiting owner review; includes the repository bootstrap order and its verification criteria.
+- Active design: [Lightweight layering](design/active/2026-10-15-lightweight-layering-design.md), awaiting owner review; defines dependency boundaries and the verification-tooling scope before application code arrives.
 - Active execution plans: none yet.
 - Completed designs and execution plans: none yet.
+
+Agent guidance is maintained in the root [AGENTS.md](../AGENTS.md), following the [open convention](https://github.com/agentsmd/agents.md). [CLAUDE.md](../CLAUDE.md) imports it. Add nested instruction files only when an implemented subproject needs distinct guidance.
 
 ## Status and metadata
 
@@ -75,7 +78,7 @@ Reviewed on 2026-10-14. These are documented practices and examples, not a unive
 - [VTCode's harness index](https://github.com/vinhnx/VTCode/blob/main/docs/harness/INDEX.md) documents `exec-plans/active/` and `exec-plans/completed/`, plus documentation updates during changes and reviews for stale content.
 - [harnesskit](https://github.com/hashwnath/harnesskit#what-gets-generated) generates active and completed execution-plan directories. It is a scaffolding example; its existence does not establish production maturity.
 - [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) describes durable progress notes, explicit feature criteria, incremental work, and testing before marking features complete. Our execution plans will hold the progress and verification record without adding a second competing progress file.
-- [Anthropic: How Claude remembers your project](https://code.claude.com/docs/en/memory) recommends concise, concrete, consistent instructions and supports `@path` imports. The planned `CLAUDE.md` will import `@AGENTS.md`; detailed lifecycle rules stay here and are linked from the shared instructions. Instructions guide behavior; CI and repository settings provide enforcement.
+- [Anthropic: How Claude remembers your project](https://code.claude.com/docs/en/memory) recommends concise, concrete, consistent instructions and supports `@path` imports. The root `CLAUDE.md` imports `@AGENTS.md`; detailed lifecycle rules stay here and are linked from the shared instructions. Instructions guide behavior; CI and repository settings provide enforcement.
 - [Anthropic: Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps) explores explicit deliverables and evaluation during incremental development. We adopt clear acceptance criteria and verification without requiring its experimental multi-agent architecture.
 
 The repository examples above support the execution-plan folder split. Extending the same split to designs, choosing these three status labels, and adding emoji are conventions chosen for Let's Farty. The cited Anthropic guidance does not prescribe this directory layout or emoji scheme.

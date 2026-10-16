@@ -4,7 +4,7 @@
 
 **Date:** 2026-10-14
 
-**Updated:** 2026-10-14
+**Updated:** 2026-10-15
 
 **Review:** Awaiting owner review
 
@@ -60,6 +60,8 @@ Server scoring reduces easy leaderboard cheating but cannot prove who made a sou
 
 ## Repository harness
 
+The [lightweight layering proposal](2026-10-15-lightweight-layering-design.md) specifies dependency boundaries and their planned verification tooling. It is awaiting review and does not change this design's pending stack and product decisions.
+
 Use one GitHub repository and a small workspace. The tree below is the intended structure as features land. Create directories when a slice needs them rather than maintaining empty packages; the requested documentation lifecycle folders are retained from the start.
 
 ```text
@@ -86,7 +88,7 @@ doc/operations/          Release and incident runbooks
 .github/                 Workflows, PR template, ownership rules
 ```
 
-`AGENTS.md` stays short and points to the right document for a task. `CLAUDE.md` imports it to avoid duplicated instructions. A root `verify` command runs the checks used by CI. [AGENTS.md convention](https://agents.md/); [OpenAI Docs on concise agent instructions](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra); [Claude Code project instructions](https://code.claude.com/docs/en/memory).
+The root [AGENTS.md](../../../AGENTS.md) adopts the open convention and points to the right document for a task. [CLAUDE.md](../../../CLAUDE.md) imports it to avoid duplicated instructions. A root `verify` command is planned to run the checks used by CI; it is not implemented yet. [AGENTS.md convention](https://agents.md/); [OpenAI Docs on concise agent instructions](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra); [Claude Code project instructions](https://code.claude.com/docs/en/memory).
 
 ### Repository bootstrap order
 
@@ -151,4 +153,4 @@ Foundation is complete when a fresh checkout can launch the shell on both platfo
 
 ## Current repository state
 
-The local checkout contains the MVP design and documentation lifecycle structure. The design is awaiting owner review; no execution plan or application implementation exists yet. The checkout is connected to `JBSKWON/lets-farty`, and the GitHub initial commit has been merged into local history. Codex Cloud environment publication is a separate account setup step described in the [root README](../../../README.md). Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.
+The local checkout contains the MVP and lightweight layering designs, documentation lifecycle structure, and root agent instructions. The root `AGENTS.md` and its `CLAUDE.md` import were adopted on 2026-10-15 at the owner's request. The designs remain awaiting review; no execution plan or application implementation exists yet. The checkout is connected to `JBSKWON/lets-farty`, and the GitHub initial commit has been merged into local history. Codex Cloud environment publication is a separate account setup step described in the [root README](../../../README.md). Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.
