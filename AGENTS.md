@@ -1,43 +1,37 @@
 # Agent instructions
 
-This repository follows the [AGENTS.md convention](https://github.com/agentsmd/agents.md). These instructions apply throughout the repository. If a subproject later needs different guidance, add a nested `AGENTS.md`; its instructions take precedence within that directory when they conflict with this file. Explicit user instructions take precedence over repository guidance.
+This repository follows the [AGENTS.md convention](https://github.com/agentsmd/agents.md). These instructions apply throughout the repository. Nested instructions take precedence within their subproject when they conflict; explicit user instructions take precedence over repository guidance. `CLAUDE.md` imports this file.
 
 ## Project context
 
-Let's Farty is currently in design. The checkout contains documentation and agent instructions; there is no application code, package manager configuration, CI workflow, or automated test suite yet. Expo/React Native, TypeScript, and Supabase are proposed choices awaiting review.
+Let's Farty has design documents and verification tooling; no application code exists yet. Expo/React Native, TypeScript for the product, and Supabase remain proposed choices awaiting review. Tooling uses pinned Node/npm independently of those product decisions.
 
 ## Start here
 
 1. Inspect `git status --short`, `git diff`, and relevant history. Preserve existing work.
-2. Read the [documentation index and lifecycle rules](doc/README.md), then the design or execution plan relevant to the task.
-3. Distinguish proposals, recorded approvals, and implemented behavior. Keep those distinctions explicit in changes and handoffs.
+2. Read the [documentation lifecycle](doc/README.md), relevant design/plan, and [current architecture](ARCHITECTURE.md).
+3. Distinguish proposals, recorded approvals, and implemented behavior in changes and handoffs.
 
 ## Task map
 
-- Product scope, data boundaries, and bootstrap sequence: [MVP design](doc/design/active/2026-10-14-lets-farty-mvp-design.md).
-- Proposed dependency rules and verification tooling: [lightweight layering design](doc/design/completed/2026-10-15-lightweight-layering-design.md).
-- Design/plan status, metadata, approvals, and document moves: [documentation workflow](doc/README.md).
-- Human overview and Codex Cloud setup: [README](README.md).
+- Product scope, private data, consent, and bootstrap: [MVP design](doc/design/active/2026-10-14-lets-farty-mvp-design.md).
+- Dependency boundaries and tooling scope: [approved layering design](doc/design/completed/2026-10-15-lightweight-layering-design.md).
+- Current layering progress and verification: [execution plan](doc/exec/active/2026-10-16-lightweight-layering-plan.md).
+- Setup, commands, boundary-change review, and fixture conventions: [CONTRIBUTING.md](CONTRIBUTING.md).
+- Human overview and cloud setup: [README.md](README.md).
 
-## Setup and verification
+## Verification
 
-No dependency installation, build, development-server, or test commands exist yet. The root `verify` command is planned, not available. Add the actual commands here when the corresponding tooling lands.
+Use Node 24.19.0 and npm 11.9.0. Run `npm ci` for locked dependencies, then `npm run verify` for fixture tests, architecture boundaries, Markdown links/lifecycle, and formatting. Run `git diff --check` before handoff. Individual commands are documented in CONTRIBUTING.md. No application build, server, or native-launch commands exist yet.
 
-For documentation changes:
+Report checks actually run, including failures or unavailable checks. A configured workflow does not prove a remote run or repository protection. Keep commands/results and remaining work in the active execution plan.
 
-- Run `git diff --check` to detect whitespace errors.
-- Check that changed local Markdown links resolve, including links affected by moves.
-- Check design and plan metadata against the documentation workflow.
-- Inspect the final diff and report the checks actually run. Identify unavailable checks explicitly; do not describe them as passing.
+## Change guidance
 
-## Change and review guidance
+- Keep instructions concise and link to each rule's owner. Update affected docs in the same change.
+- Follow `doc/design/{active,completed}` and `doc/exec/{active,completed}` lifecycle; record real approval/completion evidence.
+- Add product packages and modules only with their consuming feature; label future layouts clearly.
+- Add failing fixtures before checker changes; tests follow their production subject's boundary. Review new domain edges or library exceptions instead of suppressing diagnostics.
+- Add nested instructions only for real subprojects needing distinct guidance; inherit common rules.
 
-- Keep instructions concise and link to the document that owns each rule. Update affected documentation alongside changes.
-- Follow the existing `doc/design/{active,completed}` and `doc/exec/{active,completed}` lifecycle. Record real approval and verification evidence according to the documentation workflow.
-- Create application packages and domain modules when their consuming feature needs them. Keep proposed layouts clearly labeled until implemented.
-- Keep changes focused. Describe the resulting behavior, verification, and remaining limitations in handoffs and pull requests.
-- Add nested agent instructions only when a real subproject needs distinct commands or rules; inherit common guidance instead of duplicating it.
-
-## Product boundaries
-
-The MVP design owns the detailed requirements. In particular, ranked scores are calculated by the server; ranking and audio sharing have separate consent; health entries stay private; and the fun score is not a health assessment. Preserve these boundaries when implementing their feature slices.
+The MVP design owns detailed product boundaries: ranked scores are server-calculated; ranking and audio sharing have separate consent; health entries stay private; the fun score is not a health assessment.

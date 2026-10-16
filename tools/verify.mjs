@@ -22,7 +22,7 @@ async function main() {
   const { execFileSync } = await import('node:child_process');
   const actualNpm = execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim();
   if (`npm@${actualNpm}` !== manifest.packageManager) throw new Error(`Use ${manifest.packageManager}; found npm@${actualNpm}`);
-  process.exitCode = await runChecks([['npm', 'test']], process.cwd());
+  process.exitCode = await runChecks([['npm', 'test'], ['npm', 'run', 'check:architecture'], ['npm', 'run', 'check:docs'], ['npm', 'run', 'check:format']], process.cwd());
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch(error => { console.error(`[verify] ${error.message}`); process.exitCode = 1; });

@@ -60,16 +60,16 @@ When completing a document, change its status and move it into the matching `com
 
 For a material revision of an approved design, create a new active design linking to the earlier snapshot. Keep the earlier approval history. Cancelled or superseded work must not be labeled `Completed` merely to clear the active folder; record its disposition and replacement link, and agree on an archive convention if that case arises.
 
-## Planned CI enforcement
+## Repository enforcement
 
-The foundation slice establishes a runnable app shell and CI before recording features. It will add these checks to the root verification command and GitHub Actions:
+The layering tooling runs these checks through `npm run verify` and the GitHub Actions workflow:
 
 - Require the metadata fields and one of the three status labels for design and plan Markdown.
 - Reject `Completed` under `active/`, and reject other statuses under `completed/`.
 - Require blocker details for blocked work and approval/completion fields for completed work.
 - Check Markdown formatting and local links, including links affected by moves.
 
-These checks are not implemented yet. Reviewers must still assess approval evidence, acceptance criteria, and documentation accuracy; metadata alone cannot establish completion.
+These checks are implemented in `tools/docs/` and `.markdownlint-cli2.jsonc`. See [contributor commands](../CONTRIBUTING.md) and the [architecture map](../ARCHITECTURE.md). Reviewers still assess approval evidence, acceptance criteria, and documentation accuracy; metadata alone cannot establish completion. Local and observed remote results are recorded in the active execution plan. The foundation slice still owns a runnable app shell and repository controls.
 
 ## Research behind this convention
 

@@ -60,7 +60,7 @@ Server scoring reduces easy leaderboard cheating but cannot prove who made a sou
 
 ## Repository harness
 
-The [lightweight layering proposal](../completed/2026-10-15-lightweight-layering-design.md) specifies dependency boundaries and their planned verification tooling. It is awaiting review and does not change this design's pending stack and product decisions.
+The [lightweight layering proposal](../completed/2026-10-15-lightweight-layering-design.md) specifies dependency boundaries and their planned verification tooling. It was approved for layering/tooling implementation on 2026-10-16 and does not change this design's pending stack and product decisions.
 
 Use one GitHub repository and a small workspace. The tree below is the intended structure as features land. Create directories when a slice needs them rather than maintaining empty packages; the requested documentation lifecycle folders are retained from the start.
 
@@ -88,7 +88,7 @@ doc/operations/          Release and incident runbooks
 .github/                 Workflows, PR template, ownership rules
 ```
 
-The root [AGENTS.md](../../../AGENTS.md) adopts the open convention and points to the right document for a task. [CLAUDE.md](../../../CLAUDE.md) imports it to avoid duplicated instructions. A root `verify` command is planned to run the checks used by CI; it is not implemented yet. [AGENTS.md convention](https://agents.md/); [OpenAI Docs on concise agent instructions](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra); [Claude Code project instructions](https://code.claude.com/docs/en/memory).
+The root [AGENTS.md](../../../AGENTS.md) adopts the open convention and points to the right document for a task. [CLAUDE.md](../../../CLAUDE.md) imports it to avoid duplicated instructions. The root `npm run verify` command now checks tooling tests, dependency boundaries, and documentation locally and in the configured CI workflow. [AGENTS.md convention](https://agents.md/); [OpenAI Docs on concise agent instructions](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra); [Claude Code project instructions](https://code.claude.com/docs/en/memory).
 
 ### Repository bootstrap order
 
@@ -115,7 +115,7 @@ This follows Anthropic's emphasis on incremental progress and tested completion.
 
 ### Documentation is part of completion
 
-Markdown files are maintained as the service changes. A task is complete only when its checks pass **and its affected documentation is updated in the same change**. The implementation plan records decisions and progress during the work, not only after it finishes. The pull request template asks which documents changed or why no document was affected. CI will check Markdown format, local links, and the status/location rules in [the documentation lifecycle](../../README.md); a reviewer checks whether the content still matches the behavior. These checks are part of the foundation slice and are not installed yet.
+Markdown files are maintained as the service changes. A task is complete only when its checks pass **and its affected documentation is updated in the same change**. The implementation plan records decisions and progress during the work, not only after it finishes. The pull request template asks which documents changed or why no document was affected. CI will check Markdown format, local links, and the status/location rules in [the documentation lifecycle](../../README.md); a reviewer checks whether the content still matches the behavior. The documentation checks are now installed by the layering slice; the foundation slice retains its app-shell and repository-control criteria.
 
 Each document has one job:
 
@@ -153,4 +153,4 @@ Foundation is complete when a fresh checkout can launch the shell on both platfo
 
 ## Current repository state
 
-The local checkout contains the MVP and lightweight layering designs, documentation lifecycle structure, and root agent instructions. The root `AGENTS.md` and its `CLAUDE.md` import were adopted on 2026-10-15 at the owner's request. A [lightweight layering execution plan](../../exec/active/2026-10-16-lightweight-layering-plan.md) was drafted for review on 2026-10-16. The designs remain awaiting review; no application implementation exists yet. The layering plan covers verification tooling; the foundation app-shell plan remains separate. The checkout is connected to `JBSKWON/lets-farty`, and the GitHub initial commit has been merged into local history. Codex Cloud environment publication is a separate account setup step described in the [root README](../../../README.md). Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.
+The local checkout contains the MVP and lightweight layering designs, documentation lifecycle structure, and root agent instructions. The root `AGENTS.md` and its `CLAUDE.md` import were adopted on 2026-10-15 at the owner's request. A [lightweight layering execution plan](../../exec/active/2026-10-16-lightweight-layering-plan.md) was drafted for review on 2026-10-16. The layering design is approved and its tooling implemented; MVP product choices remain awaiting review, and no application implementation exists yet. The layering plan covers verification tooling; the foundation app-shell plan remains separate. The checkout is connected to `JBSKWON/lets-farty`, and the GitHub initial commit has been merged into local history. Codex Cloud environment publication is a separate account setup step described in the [root README](../../../README.md). Activating GitHub protection, cloud deployment, Apple/Google sign-in, and store delivery requires the corresponding external projects and credentials.

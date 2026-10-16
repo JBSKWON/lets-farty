@@ -10,7 +10,8 @@
     "test": "node --test tools/test/*.test.mjs",
     "verify": "node tools/verify.mjs",
     "check:docs": "node tools/docs/check.mjs",
-    "check:format": "markdownlint-cli2"
+    "check:format": "markdownlint-cli2",
+    "check:architecture": "node tools/architecture/check.mjs"
   },
   "devDependencies": {
     "dependency-cruiser": "18.6.0",
